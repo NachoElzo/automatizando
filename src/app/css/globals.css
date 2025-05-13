@@ -4,6 +4,10 @@ body {
   font-family: 'Arial', sans-serif;
   background-color: #f7f7f7;
   color: var(--foreground);
+  display: flex; /* Usar flexbox para centrar el contenido */
+  justify-content: center; /* Centrar horizontalmente */
+  align-items: center; /* Centrar verticalmente */
+  min-height: 100vh; /* Asegura que el body ocupe toda la altura de la pantalla */
 }
 
 /* Header Styles */
@@ -59,9 +63,11 @@ a {
 /* Grid Container Styles */
 .grid-container {
   display: grid;
-  grid-template-columns: repeat(1, 1fr); /* 1 columna por defecto */
   gap: 1.5rem;
   padding: 2rem;
+  max-width: 1200px; /* Define un ancho máximo */
+  width: 100%; /* Asegura que use todo el ancho disponible */
+  box-sizing: border-box; /* Incluye el padding en el ancho total */
 }
 
 @media (min-width: 640px) {
@@ -72,7 +78,7 @@ a {
 
 @media (min-width: 1024px) {
   .grid-container {
-    grid-template-columns: repeat(3, 1fr); /* 3 columnas en pantallas grandes */
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Columnas flexibles en pantallas grandes */
   }
 }
 
@@ -84,6 +90,9 @@ a {
   padding: 1.5rem;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   cursor: pointer;
+  margin: 0; /* Elimina márgenes adicionales */
+  width: 100%; /* Asegura que las tarjetas ocupen todo el ancho de la columna */
+  box-sizing: border-box; /* Incluye el padding en el ancho total */
 }
 
 .card:hover {

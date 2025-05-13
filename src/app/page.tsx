@@ -10,10 +10,10 @@ const sections = [
         topics: [
             { name: "Inputs fields", link: "/inputs-fields" },
             { name: "Dropdowns", link: "/dropdowns" },
-            { name: "Calendars", link: "/calendars" },
-            { name: "Checkboxes", link: "/checkboxes" },
-            { name: "Radio Buttons", link: "/radio-buttons" },
-            { name: "Custom Automation", link: "/custom-automation" },
+            { name: "in progress", link: "/calendars" },
+            { name: "in progress", link: "/checkboxes" },
+            { name: "in progress", link: "/radio-buttons" },
+            { name: "in progress", link: "/custom-automation" },
         ],
     },
 ];
