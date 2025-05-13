@@ -1,0 +1,105 @@
+/* General Styles */
+body {
+  margin: 0;
+  font-family: 'Arial', sans-serif;
+  background-color: #f7f7f7;
+  color: var(--foreground);
+}
+
+/* Header Styles */
+.header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  padding: 2rem;
+  background-color: #f7f7f7;
+}
+
+.title {
+  text-align: center;
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #676767;
+}
+
+.subtitle {
+  text-align: center;
+  font-size: 1.25rem;
+  font-weight: 300;
+  color: #7f8286; /* Tailwind's gray-600 */
+  margin-top: 0.5rem;
+}
+
+/* Eliminar estilos predeterminados de los links */
+a {
+  text-decoration: none; /* Elimina el subrayado */
+  color: inherit; /* Hereda el color del texto del elemento padre */
+}
+/* Login Button Styles */
+.login-button {
+  font-size: 1rem;
+  font-weight: 200;
+  cursor: pointer;
+  background-color: #22c55e; /* Tailwind's green-500 (verde semáforo) */
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  position: absolute; /* Asegura que el botón esté en la esquina superior derecha */
+  top: 1rem;
+  right: 1rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra sutil */
+  transition: background-color 0.3s ease;
+}
+
+.login-button:hover {
+  background-color: #16a34a; /* Tailwind's green-600 */
+}
+
+/* Grid Container Styles */
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr); /* 1 columna por defecto */
+  gap: 1.5rem;
+  padding: 2rem;
+}
+
+@media (min-width: 640px) {
+  .grid-container {
+    grid-template-columns: repeat(2, 1fr); /* 2 columnas en pantallas pequeñas */
+  }
+}
+
+@media (min-width: 1024px) {
+  .grid-container {
+    grid-template-columns: repeat(3, 1fr); /* 3 columnas en pantallas grandes */
+  }
+}
+
+/* Card Styles */
+.card {
+  background-color: #ffffff; /* Fondo blanco */
+  border-radius: 0.5rem; /* Bordes redondeados */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra sutil */
+  padding: 1.5rem;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+}
+
+.card:hover {
+  transform: translateY(-5px); /* Eleva la tarjeta al pasar el mouse */
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15); /* Sombra más fuerte al pasar el mouse */
+}
+
+.card-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #67696c; /* Tailwind's gray-800 */
+  margin-bottom: 0.5rem;
+}
+
+.card-description {
+  font-size: 0.875rem;
+  color: #9fa0a2; /* Tailwind's gray-600 */
+  line-height: 1.5;
+}
