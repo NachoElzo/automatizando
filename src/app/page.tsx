@@ -10,7 +10,7 @@ const sections = [
         topics: [
             { name: "Inputs fields", link: "/inputs-fields" },
             { name: "Dropdowns", link: "/dropdowns" },
-            { name: "in progress", link: "/calendars" },
+            { name: "Drag and drop", link: "/drag-and-drop" },
             { name: "in progress", link: "/checkboxes" },
             { name: "in progress", link: "/radio-buttons" },
             { name: "in progress", link: "/custom-automation" },

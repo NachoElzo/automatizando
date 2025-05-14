@@ -7,6 +7,10 @@ export default function DropdownPractice() {
     const [company, setCompany] = useState("");
     const [experience, setExperience] = useState("");
 
+    const [cuisine, setCuisine] = useState("");
+    const [skillLevel, setSkillLevel] = useState("");
+    const [cookingTime, setCookingTime] = useState("");
+
     const handleProfessionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         setProfession(e.target.value);
     };
@@ -19,10 +23,27 @@ export default function DropdownPractice() {
         setExperience(e.target.value);
     };
 
-    const isMatch =
+    const handleCuisineChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        setCuisine(e.target.value);
+    };
+
+    const handleSkillLevelChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        setSkillLevel(e.target.value);
+    };
+
+    const handleCookingTimeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        setCookingTime(e.target.value);
+    };
+
+    const isMatchProfession =
         profession === "automation" &&
         company === "it" &&
         experience === "5";
+
+    const isMatchCooking =
+        cuisine === "italian" &&
+        skillLevel === "advanced" &&
+        cookingTime === "30";
 
     return (
         <div className="container">
@@ -79,9 +100,67 @@ export default function DropdownPractice() {
                 </select>
             </div>
 
-            {isMatch && (
+            {isMatchProfession && (
                 <div className="result">
                     I&apos;m an Automation Engineer working in an IT company with +5 years of work experience.
+                </div>
+            )}
+
+            <h1 className="title">Cooking Preferences</h1>
+            {/* Instructional label */}
+            <p className="instruction">
+                Select &quot;Italian&quot;, &quot;Advanced&quot;, and &quot;30 minutes&quot; to display the result below.
+            </p>
+            <div className="dropdown-section">
+                <label htmlFor="cuisine">Cuisine:</label>
+                <select
+                    id="cuisine"
+                    className="dropdown"
+                    value={cuisine}
+                    onChange={handleCuisineChange}
+                >
+                    <option value="">Select your cuisine</option>
+                    <option value="italian">Italian</option>
+                    <option value="mexican">Mexican</option>
+                    <option value="japanese">Japanese</option>
+                    <option value="indian">Indian</option>
+                    <option value="french">French</option>
+                </select>
+            </div>
+
+            <div className="dropdown-section">
+                <label htmlFor="skillLevel">Skill Level:</label>
+                <select
+                    id="skillLevel"
+                    className="dropdown"
+                    value={skillLevel}
+                    onChange={handleSkillLevelChange}
+                >
+                    <option value="">Select your skill level</option>
+                    <option value="beginner">Beginner</option>
+                    <option value="intermediate">Intermediate</option>
+                    <option value="advanced">Advanced</option>
+                </select>
+            </div>
+
+            <div className="dropdown-section">
+                <label htmlFor="cookingTime">Cooking Time:</label>
+                <select
+                    id="cookingTime"
+                    className="dropdown"
+                    value={cookingTime}
+                    onChange={handleCookingTimeChange}
+                >
+                    <option value="">Select cooking time</option>
+                    <option value="15">15 minutes</option>
+                    <option value="30">30 minutes</option>
+                    <option value="60">60 minutes</option>
+                </select>
+            </div>
+
+            {isMatchCooking && (
+                <div className="result">
+                    You love cooking Italian cuisine at an advanced level in just 30 minutes!
                 </div>
             )}
         </div>

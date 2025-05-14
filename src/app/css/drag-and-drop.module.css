@@ -1,0 +1,147 @@
+body {
+  margin: 0;
+  font-family: 'Arial', sans-serif;
+  background-color: #f7f7f7;
+  color: #333;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.container {
+  max-width: 1200px;
+  width: 100%;
+  padding: 2rem;
+  background-color: #ffffff;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
+}
+
+.title {
+  text-align: center;
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 1.5rem;
+  color: #02cb4c;
+}
+
+.instruction {
+  font-size: 1rem;
+  font-weight: 400;
+  color: #555;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.dragSection {
+  display: flex;
+  gap: 2rem;
+  justify-content: space-between;
+  flex-wrap: wrap; /* Ensure responsiveness for smaller screens */
+}
+
+.supermarketList,
+.shoppingList {
+  flex: 1;
+  padding: 1rem;
+  border: 2px dashed #ccc;
+  border-radius: 0.5rem;
+  background-color: #f9f9f9;
+  min-height: 400px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.sectionTitle {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 1rem;
+  width: 100%;
+}
+
+.draggable {
+  padding: 0.75rem 1rem;
+  background-color: #30dd7e; /* Lighter green */
+  color: #065f46; /* Darker green for text */
+  font-size: 1rem;
+  font-weight: bold;
+  text-align: center;
+  border-radius: 999px; /* Bubble shape */
+  cursor: grab;
+  user-select: none;
+  text-transform: capitalize;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for better visibility */
+}
+
+.draggable:active {
+  cursor: grabbing;
+}
+
+.placeholder {
+  font-size: 1rem;
+  color: #999;
+  text-align: center;
+}
+
+.list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+}
+
+.listItem {
+  font-size: 1rem;
+  color: #333;
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid #ccc;
+  text-align: left;
+}
+
+.printButton {
+  margin-top: 1rem;
+  padding: 0.75rem 1.5rem;
+  background-color: #007bff; /* Blue color */
+  color: white;
+  font-size: 1.25rem; /* Larger font size */
+  font-weight: bold;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+}
+
+.printButton:hover {
+  background-color: #0056b3; /* Darker blue on hover */
+}
+
+/* Responsive Design for Mobile */
+@media (max-width: 768px) {
+  .dragSection {
+    flex-direction: column; /* Stack sections vertically on smaller screens */
+  }
+
+  .supermarketList,
+  .shoppingList {
+    width: 100%; /* Full width for each section */
+    min-height: 300px; /* Adjust height for smaller screens */
+  }
+
+  .grid {
+    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); /* Smaller bubbles for mobile */
+  }
+
+  .draggable {
+    font-size: 0.9rem; /* Slightly smaller text for mobile */
+    padding: 0.5rem 0.75rem; /* Adjust padding for smaller bubbles */
+  }
+}
