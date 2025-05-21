@@ -1,0 +1,49 @@
+.iframe-practice-container {
+  max-width: 600px;
+  margin: 2rem auto;
+  background: #fff;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 16px rgba(34,197,94,0.08);
+  padding: 2rem;
+}
+
+.iframe-title {
+  color: #22c55e;
+  font-size: 1.6rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.iframe-instruction {
+  color: #2563eb;
+  font-size: 1.1rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.iframe-wrapper {
+  margin: 0 auto 1.5rem auto;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(34,197,94,0.10);
+}
+
+.iframe-label-result {
+  margin-top: 1rem;
+  background: #f0fdf4;
+  color: #16a34a;
+  border: 1.5px solid #22c55e;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  text-align: center;
+  font-weight: 500;
+}
+
+.iframe-dropdown {
+  padding: 0.5rem;
+  border-radius: 0.3rem;
+  border: 1px solid #22c55e;
+  min-width: 140px;
+  font-size: 1rem;
+}

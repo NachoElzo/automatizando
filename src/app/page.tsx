@@ -13,7 +13,7 @@ const sections = [
             { name: "Drag and drop", link: "/drag-and-drop" },
             { name: "Calendars", link: "/calendars" },
             { name: "Mobile view", link: "/mobile-view" },
-            { name: "in progress", link: "/custom-automation" },
+            { name: "iframe", link: "/iframe" },
         ],
     },
 ];
