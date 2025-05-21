@@ -1,0 +1,140 @@
+.mobile-container {
+  min-height: 100vh;
+
+}
+
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 2rem;
+  color: #22c55e !important;
+  color: white;
+  position: relative;
+}
+
+.navbar-logo {
+  font-size: 1.3rem;
+  font-weight: bold;
+  letter-spacing: 1px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.burger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  gap: 0.3rem;
+  z-index: 11;
+}
+
+.burger span {
+  display: block;
+  width: 2rem;
+  height: 0.25rem;
+  background: white;
+  border-radius: 2px;
+  transition: all 0.3s;
+}
+
+.burger.open span:nth-child(1) {
+  transform: translateY(0.5rem) rotate(45deg);
+}
+.burger.open span:nth-child(2) {
+  opacity: 0;
+}
+.burger.open span:nth-child(3) {
+  transform: translateY(-0.5rem) rotate(-45deg);
+}
+
+/* Siempre oculto por defecto en mobile */
+.nav-links {
+  display: flex;
+  gap: 2rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-links li a {
+  color: white;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 1.1rem;
+  transition: color 0.2s;
+}
+
+.nav-links li a:hover {
+  color: #16a34a;
+}
+
+@media (max-width: 800px) {
+  .burger {
+    display: flex;
+  }
+  .nav-links {
+    display: none;
+    flex-direction: column;
+    background: #22c55e;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    width: 70vw;
+    max-width: 300px;
+    padding: 2rem 1.5rem;
+    gap: 1.5rem;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    transform: translateX(100%);
+    transition: transform 0.3s;
+    z-index: 10;
+    border-radius: 0 0 0.75rem 0.75rem;
+  }
+  .nav-links.show {
+    display: flex;
+    transform: translateX(0);
+  }
+}
+
+.mobile-main {
+  max-width: 500px;
+  margin: 3rem auto 0 auto;
+  background: white;
+  border-radius: 1rem;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  padding: 2rem;
+  text-align: center;
+}
+
+.mobile-title {
+  color: #22c55e !important;
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.mobile-instruction {
+  color: #333;
+  font-size: 1.1rem;
+  margin-bottom: 0;
+}
+
+/* Colores verdes para navbar y título */
+.green-navbar {
+  background: #22c55e !important;
+  color: white;
+}
+
+.green-title {
+  color: #22c55e !important;
+}
+
+/* Cambia el color de los links activos y hover a un verde más oscuro */
+.nav-links li a:hover {
+  color: #16a34a;
+}
