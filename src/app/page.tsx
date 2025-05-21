@@ -11,7 +11,7 @@ const sections = [
             { name: "Inputs fields", link: "/inputs-fields" },
             { name: "Dropdowns", link: "/dropdowns" },
             { name: "Drag and drop", link: "/drag-and-drop" },
-            { name: "in progress", link: "/checkboxes" },
+            { name: "Calendars", link: "/calendars" },
             { name: "in progress", link: "/radio-buttons" },
             { name: "in progress", link: "/custom-automation" },
         ],

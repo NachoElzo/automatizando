@@ -1,0 +1,81 @@
+.container {
+  width: 100%;
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: #fff;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  box-sizing: border-box;
+}
+
+.title {
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 1.5rem;
+  color: #22c55e;
+}
+
+.calendar-section {
+  margin-bottom: 2.5rem;
+}
+
+.calendar-label {
+  display: block;
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+
+.calendar-input {
+  width: 100%;
+  padding: 0.75rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 0.5rem;
+  box-sizing: border-box;
+  margin-bottom: 1rem;
+  transition: border-color 0.3s ease;
+}
+
+.calendar-input:focus {
+  border-color: #22c55e;
+  outline: none;
+}
+
+.calendar-input.invalid {
+  border-color: #dc2626 !important; /* rojo */
+}
+
+.calendar-input.valid {
+  border-color: #22c55e !important; /* verde */
+}
+
+.calendar-result {
+  margin-top: 1rem;
+  padding: 1rem;
+  background-color: #f0fdf4;
+  border-radius: 0.5rem;
+  text-align: center;
+}
+
+.calendar-label-result {
+  font-size: 1rem;
+  color: #16a34a;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+@media (max-width: 600px) {
+  .container {
+    padding: 1rem;
+  }
+  .title {
+    font-size: 1.1rem;
+  }
+  .calendar-label-result {
+    font-size: 0.95rem;
+  }
+}

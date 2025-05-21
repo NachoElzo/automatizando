@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./css/globals.css";
 import "./css/input-fields.css";
 import "./css/dropdowns.css";
+import "./css/drag-and-drop.module.css"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
