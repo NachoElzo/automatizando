@@ -7,7 +7,7 @@ export default function IframePractice() {
   const [msgEl3, setMsgEl3] = useState(false);
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
-  // HTML del iframe como string, SIN label/mensaje para elemento3 dentro del iframe
+  // HTML for the iframe as a string, NO label/message for element3 inside the iframe
   const iframeContent = `
     <html>
       <head>
@@ -25,14 +25,14 @@ export default function IframePractice() {
           function toggleMsg(id) {
             if(id === 'el3') {
               window.parent.postMessage('toggle-el3', '*');
-              // Oculta los mensajes internos
+              // Hide internal messages
               document.querySelectorAll('.iframe-msg').forEach(el => el.style.display = 'none');
             } else {
               var msg = document.getElementById('msg-' + id);
               if (msg.style.display === 'block') {
                 msg.style.display = 'none';
               } else {
-                // Oculta todos los mensajes antes de mostrar el nuevo
+                // Hide all messages before showing the new one
                 document.querySelectorAll('.iframe-msg').forEach(el => el.style.display = 'none');
                 msg.style.display = 'block';
               }
@@ -44,31 +44,31 @@ export default function IframePractice() {
       <body>
         <ul class="iframe-list">
           <li>
-            <button class="iframe-btn" onclick="toggleMsg('el1')">elemento1</button>
+            <button class="iframe-btn" onclick="toggleMsg('el1')">element 1</button>
           </li>
         </ul>
         <div class="iframe-grid">
           <div></div>
           <div class="iframe-grid-item">
-            <button class="iframe-btn" onclick="toggleMsg('el2')">elemento2</button>
+            <button class="iframe-btn" onclick="toggleMsg('el2')">element 2</button>
           </div>
         </div>
         <div style="margin-bottom: 1rem;">
           <button id="iframe-btn-el3" class="iframe-btn" onclick="toggleMsg('el3')">
-            elemento3
+            element 3
           </button>
         </div>
-        <div id="msg-el1" class="iframe-msg">Has presionado el botón de elemento 1</div>
-        <div id="msg-el2" class="iframe-msg">Has presionado el botón de elemento 2</div>
+        <div id="msg-el1" class="iframe-msg">You pressed the button for element 1</div>
+        <div id="msg-el2" class="iframe-msg">You pressed the button for element 2</div>
       </body>
     </html>
   `;
 
-  // Escuchar mensajes del iframe para mostrar/ocultar el label de elemento3 fuera del iframe
+  // Listen for messages from the iframe to show/hide the label for element3 outside the iframe
   useEffect(() => {
     function handleMessage(e: MessageEvent) {
-      if (e.data === "toggle-el3") setMsgEl3((prev) => !prev); // Toggle: muestra/oculta
-      if (e.data === "hide-el3") setMsgEl3(false); // Oculta siempre
+      if (e.data === "toggle-el3") setMsgEl3((prev) => !prev); // Toggle: show/hide
+      if (e.data === "hide-el3") setMsgEl3(false); // Always hide
     }
     window.addEventListener("message", handleMessage);
     return () => window.removeEventListener("message", handleMessage);
@@ -76,13 +76,13 @@ export default function IframePractice() {
 
   return (
     <div className="iframe-practice-container">
-      <h1 className="iframe-title">Práctica de automatización con iframe</h1>
+      <h1 className="iframe-title">Iframe Automation Practice</h1>
       <p className="iframe-instruction">
-        Dentro del iframe de abajo debes encontrar tres botones:<br />
-        <strong>elemento1</strong> está dentro de una lista.<br />
-        <strong>elemento2</strong> está dentro de una grilla.<br />
-        <strong>elemento3</strong> está solo como botón.<br />
-       Cuando presiones los botones de elemento1, elemento2 o elemento3, se mostrará un mensaje que deberás buscar haciendo scroll.
+        Inside the iframe below you must find three buttons:<br />
+        <strong>element 1</strong> is inside a list.<br />
+        <strong>element 2</strong> is inside a grid.<br />
+        <strong>element 3</strong> is just a button.<br />
+        When you press the buttons for element 1, element 2, or element 3, a message will appear that you must find by scrolling.
       </p>
       <div className="iframe-wrapper">
         <iframe
@@ -98,11 +98,11 @@ export default function IframePractice() {
           }}
         />
       </div>
-      {/* Espacio grande para forzar scroll en la página */}
+      {/* Large space to force scrolling on the page */}
       <div style={{ height: "600px" }} />
       {msgEl3 && (
         <div className="iframe-label-result" style={{ marginTop: "4rem" }}>
-          Has presionado el botón de elemento 3
+          You pressed the button for element 3
         </div>
       )}
     </div>

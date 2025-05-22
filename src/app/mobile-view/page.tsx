@@ -40,10 +40,10 @@ export default function MobileViewPractice() {
         </ul>
       </nav>
       <main className="mobile-main">
-        <h1 className="mobile-title">¡Bienvenido a la práctica de vistas móviles!</h1>
+        <h1 className="mobile-title">Welcome to the mobile view practice!</h1>
         <p className="mobile-instruction">
-          Prueba el menú burger, cambia el tamaño de la pantalla y automatiza clicks.<br />
-          <span role="img" aria-label="burger">🍔</span> ¡Haz clic en el menú para ver la magia!
+          Try the burger menu, resize the screen, and automate clicks.<br />
+          <span role="img" aria-label="burger">🍔</span> Click the menu to see the magic!
         </p>
       </main>
     </div>

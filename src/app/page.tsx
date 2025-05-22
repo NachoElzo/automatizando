@@ -14,6 +14,9 @@ const sections = [
             { name: "Calendars", link: "/calendars" },
             { name: "Mobile view", link: "/mobile-view" },
             { name: "iframe", link: "/iframe" },
+            { name: "Sliders", link: "/sliders" },
+            { name: "Tabs", link: "/tabs" },
+             { name: "Download & upload", link: "/download-upload" },
         ],
     },
 ];
