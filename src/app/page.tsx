@@ -16,7 +16,8 @@ const sections = [
             { name: "iframe", link: "/iframe" },
             { name: "Sliders", link: "/sliders" },
             { name: "Tabs", link: "/tabs" },
-             { name: "Download & upload", link: "/download-upload" },
+            { name: "Download & upload", link: "/download-upload" },
+            { name: "Alerts", link: "/alerts" },
         ],
     },
 ];
@@ -58,6 +59,7 @@ export default function Home() {
             <header className="header">
                 <h1 className="title">Automation Practice Hub</h1>
                 <p className="subtitle">Explore different automation tools and techniques</p>
+
             </header>
 
             <main className="grid-container">
