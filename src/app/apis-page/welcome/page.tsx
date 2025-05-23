@@ -1,7 +1,7 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import "../../css/welcome.css";
 
 // --- API MOCK LOCAL (solo para demo, no persistente) ---
@@ -10,6 +10,14 @@ async function mockUsernameApi(newName: string): Promise<string> {
 }
 
 export default function WelcomePage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <WelcomeContent />
+    </Suspense>
+  );
+}
+
+function WelcomeContent() {
   const params = useSearchParams();
   const initialUsername = params.get("username") || "User";
   const [username, setUsername] = useState(initialUsername);
