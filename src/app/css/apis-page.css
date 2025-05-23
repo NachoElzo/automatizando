@@ -66,12 +66,12 @@
 }
 
 .api-btn.get {
-  background: #22c55e;
+  background: #019337;
   color: #fff;
 }
 
 .api-btn.post {
-  background: #16a34a;
+  background: #22c55e;
   color: #fff;
 }
 
@@ -91,7 +91,7 @@
 }
 
 .api-btn.clear {
-  background: #22c55e; /* Igual que GET */
+  background: #019337;
   color: #fff;
   font-weight: 700;
   border: none;

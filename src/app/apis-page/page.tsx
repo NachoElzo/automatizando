@@ -44,7 +44,7 @@ export default function ApiPracticePage() {
   const [emptyList, setEmptyList] = useState(false);
   const [columns, setColumns] = useState(["id", "name", "password", "token"]);
 
-  // Helper para mantener máximo 20 usuarios
+  const [showFullPopup, setShowFullPopup] = useState(false);
 
   // GET
   const handleGetUser = async () => {
@@ -53,7 +53,6 @@ export default function ApiPracticePage() {
     setLastResult(null);
     setEmptyList(false);
 
-    // Incrementa el contador y captura el id de este request
     const currentRequest = ++getRequestId.current;
 
     try {
@@ -68,7 +67,6 @@ export default function ApiPracticePage() {
       }
       const data = await res.json();
 
-      // Solo actualiza el estado si este es el último request
       if (currentRequest !== getRequestId.current) return;
 
       if (!data || data.length === 0) {
@@ -104,11 +102,17 @@ export default function ApiPracticePage() {
 
   // POST
   const handleCreateUser = async () => {
-    setShowUserList(false);
-    setUserList([]);
     if (!newName || !newPassword) return;
+    if (newName.length > 15 || newPassword.length > 15) {
+      setLastResult(<div className="api-error">Username and password must be 15 characters or less.</div>);
+      return;
+    }
+    if (userList.length >= 20) {
+      setShowFullPopup(true);
+      return;
+    }
     setLastResult(null);
-    setEmptyList(false); // Oculta el label de tabla vacía al crear usuario
+    setEmptyList(false);
     try {
       setLoadingPost(true);
       const res = await fetch("/api/users", {
@@ -136,8 +140,6 @@ export default function ApiPracticePage() {
             </span>
           </div>
         );
-        // NO abras la grilla aquí
-        // NO modifiques userList ni showUserList aquí
       }
     } finally {
       setLoadingPost(false);
@@ -148,8 +150,6 @@ export default function ApiPracticePage() {
 
   // PUT
   const handleUpdateUser = async () => {
-    setShowUserList(false);
-    setUserList([]);
     setLastResult(null);
     setTokenErrorPut("");
     setPasswordErrorPut("");
@@ -191,8 +191,7 @@ export default function ApiPracticePage() {
             <b>Updated:</b> {data.name} (ID: {data.id})
           </div>
         );
-        setUserList(prev => prev.map(u => u.id === data.id ? { ...u, name: data.name } : u));
-        setShowUserList(true);
+        // NO actualizar userList ni showUserList aquí
       }
     } finally {
       setLoadingPut(false);
@@ -203,8 +202,6 @@ export default function ApiPracticePage() {
 
   // PATCH
   const handlePatchUser = async () => {
-    setShowUserList(false);
-    setUserList([]);
     setLastResult(null);
     setTokenErrorPatch("");
     setPasswordErrorPatch("");
@@ -219,6 +216,10 @@ export default function ApiPracticePage() {
     }
     if (!id) return;
     if (!patchName) return;
+    if (patchName.length > 15) {
+      setLastResult(<div className="api-error">Username must be 15 characters or less.</div>);
+      return;
+    }
     setLoadingPatch(true);
     try {
       const res = await fetch("/api/users", {
@@ -246,8 +247,7 @@ export default function ApiPracticePage() {
             <b>Patched:</b> {data.name} (ID: {data.id})
           </div>
         );
-        setUserList(prev => prev.map(u => u.id === data.id ? { ...u, name: data.name } : u));
-        setShowUserList(true);
+        // NO actualizar userList ni showUserList aquí
       }
     } finally {
       setLoadingPatch(false);
@@ -258,8 +258,6 @@ export default function ApiPracticePage() {
 
   // DELETE
   const handleDeleteUser = async () => {
-    setShowUserList(false);
-    setUserList([]);
     setLastResult(null);
     setTokenErrorDelete("");
     setPasswordErrorDelete("");
@@ -300,8 +298,7 @@ export default function ApiPracticePage() {
             <b>Deleted user with ID:</b> {data.id}
           </div>
         );
-        setUserList(prev => prev.filter(u => u.id !== data.id));
-        setShowUserList(true);
+        // NO actualizar userList ni showUserList aquí
       }
     } finally {
       setLoadingDelete(false);
@@ -309,35 +306,39 @@ export default function ApiPracticePage() {
     }
   };
 
-  // CLEAR
-  const handleClear = async () => {
-    setLoading(true);
-    await fetch("/api/users/all", { method: "DELETE" });
-    setUserList([]);
+  const handleClear = () => {
     setShowUserList(false);
-    setColumns(["id", "name", "password", "token"]);
+    setUserList([]);
+    setEmptyList(false);
     setLastResult(null);
-    setUpdateId("");
-    setUpdateName("");
-    setPatchId("");
-    setPatchName("");
-    setDeleteId("");
-    setUserToken("");
-    setUserPassword("");
     setTokenErrorPut("");
     setTokenErrorPatch("");
     setTokenErrorDelete("");
     setPasswordErrorPut("");
     setPasswordErrorPatch("");
     setPasswordErrorDelete("");
-    setNewName("");
-    setNewPassword("");
-    setEmptyList(false);
-    setLoading(false);
   };
 
   return (
     <div className="api-container">
+      {/* POPUP MODAL */}
+      {showFullPopup && (
+        <div className="popup-overlay">
+          <div className="popup-modal">
+            <div className="popup-warning">The table is full</div>
+            <div className="popup-message">
+              You can only have 20 users in the table.<br />
+              Please delete one to add another.
+            </div>
+            <button
+              className="popup-btn"
+              onClick={() => setShowFullPopup(false)}
+            >
+              Accept
+            </button>
+          </div>
+        </div>
+      )}
       <h1 className="api-title">API Practice</h1>
       <p className="api-description">
         <b>Warning!</b> This API practice service is shared by the whole community.<br />
@@ -353,11 +354,6 @@ export default function ApiPracticePage() {
           CLEAR
         </button>
       </div>
-      {/* Mensaje de error o resultado de GET justo debajo de los botones */}
-      {lastResult && (
-        <div style={{ margin: "12px 0" }}>
-        </div>
-      )}
       {/* User list grid */}
       {emptyList && !lastResult && (
         <div className="api-error" style={{ textAlign: "center" }}>USER TABLE IS EMPTY</div>
@@ -389,7 +385,7 @@ export default function ApiPracticePage() {
           type="text"
           placeholder="New user name"
           value={newName}
-          onChange={e => setNewName(e.target.value)}
+          onChange={e => setNewName(e.target.value.slice(0, 15))}
           className="api-input"
           maxLength={15}
         />
@@ -397,15 +393,14 @@ export default function ApiPracticePage() {
           type="text"
           placeholder="New user password"
           value={newPassword}
-          onChange={e => setNewPassword(e.target.value)}
+          onChange={e => setNewPassword(e.target.value.slice(0, 15))}
           className="api-input"
           maxLength={15}
         />
-  
         <button onClick={handleCreateUser} disabled={loading || loadingPost || !newName || !newPassword} className="api-btn post">
           {loadingPost ? "Loading..." : "POST User"}
         </button>
-      {/* USER RESULT */}
+        {/* USER RESULT */}
         {lastResult}
       </div>
       {/* TOKEN & PASSWORD INPUT FOR PUT/PATCH/DELETE */}
@@ -417,7 +412,7 @@ export default function ApiPracticePage() {
           type="text"
           placeholder="User password"
           value={userPassword}
-          onChange={e => setUserPassword(e.target.value)}
+          onChange={e => setUserPassword(e.target.value.slice(0, 15))}
           className="api-input"
           style={{ marginBottom: 8, width: 320, maxWidth: "100%" }}
           maxLength={15}
@@ -426,7 +421,7 @@ export default function ApiPracticePage() {
           type="text"
           placeholder="User token"
           value={userToken}
-          onChange={e => setUserToken(e.target.value)}
+          onChange={e => setUserToken(e.target.value.slice(0, 15))}
           className="api-input"
           style={{ marginBottom: 8, width: 320, maxWidth: "100%" }}
           maxLength={15}
@@ -447,8 +442,9 @@ export default function ApiPracticePage() {
           type="text"
           placeholder="Update user name"
           value={updateName}
-          onChange={e => setUpdateName(e.target.value)}
+          onChange={e => setUpdateName(e.target.value.slice(0, 15))}
           className="api-input"
+          maxLength={15}
         />
         <button onClick={handleUpdateUser} disabled={loading || loadingPut || !updateName || !updateId} className="api-btn put">
           {loadingPut ? "Loading..." : "PUT User"}
@@ -471,8 +467,9 @@ export default function ApiPracticePage() {
           type="text"
           placeholder="Patch user name"
           value={patchName}
-          onChange={e => setPatchName(e.target.value)}
+          onChange={e => setPatchName(e.target.value.slice(0, 15))}
           className="api-input"
+          maxLength={15}
         />
         <button onClick={handlePatchUser} disabled={loading || loadingPatch || !patchName || !patchId} className="api-btn patch">
           {loadingPatch ? "Loading..." : "PATCH User"}
