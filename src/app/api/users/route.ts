@@ -91,6 +91,12 @@ export async function PATCH(req: NextRequest) {
 }
 
 export async function DELETE(req: NextRequest) {
+  // Si la ruta es /api/users/all, borra todos los usuarios
+  if (req.nextUrl.pathname.endsWith("/api/users/all")) {
+    users = [];
+    return NextResponse.json({ success: true });
+  }
+
   const ip = getIP(req);
   if (Date.now() - (lastRequest[ip] || 0) < 1000) {
     return NextResponse.json({ error: "Too many requests" }, { status: 429 });
@@ -109,19 +115,3 @@ export async function DELETE(req: NextRequest) {
   users = users.filter((u, i) => i !== idx);
   return NextResponse.json({ success: true, id });
 }
-
-// Endpoint para borrar todos los usuarios
-export async function DELETE_ALL() {
-  users = [];
-  return NextResponse.json({ success: true });
-}
-
-// Next.js route handler para DELETE /api/users/all
-export const dynamic = "force-dynamic";
-export const handlers = [
-  {
-    method: "DELETE",
-    path: "/api/users/all",
-    handler: DELETE_ALL,
-  },
-];

@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import "../css/apis-page.css";
 
 export default function ApiPracticePage() {
+  const [loading, setLoading] = useState(false);
   const [loadingGet, setLoadingGet] = useState(false);
   const [loadingPost, setLoadingPost] = useState(false);
   const [loadingPut, setLoadingPut] = useState(false);
@@ -45,6 +46,7 @@ export default function ApiPracticePage() {
 
   // GET
   const handleGetUser = async () => {
+    setLoading(true);
     setLoadingGet(true);
     setLastResult(null);
     setEmptyList(false);
@@ -75,12 +77,14 @@ export default function ApiPracticePage() {
       setLastResult(null);
     }
     setLoadingGet(false);
+    setLoading(false);
   };
 
   // POST
   const handleCreateUser = async () => {
     if (!newName || !newPassword) return;
     setLastResult(null);
+    setEmptyList(false); // Oculta el label de tabla vacía al crear usuario
     try {
       setLoadingPost(true);
       const res = await fetch("/api/users", {
@@ -105,6 +109,8 @@ export default function ApiPracticePage() {
             </span>
           </div>
         );
+        // NO abras la grilla aquí
+        // NO modifiques userList ni showUserList aquí
       }
     } finally {
       setLoadingPost(false);
@@ -272,6 +278,7 @@ export default function ApiPracticePage() {
 
   // CLEAR
   const handleClear = async () => {
+    setLoading(true);
     await fetch("/api/users/all", { method: "DELETE" });
     setUserList([]);
     setShowUserList(false);
@@ -292,6 +299,7 @@ export default function ApiPracticePage() {
     setNewName("");
     setNewPassword("");
     setEmptyList(false);
+    setLoading(false);
   };
 
   return (
@@ -304,15 +312,15 @@ export default function ApiPracticePage() {
         Remember: it is for learning and testing purposes only—do not abuse requests!
       </p>
       <div className="api-section" style={{ justifyContent: "space-between" }}>
-        <button onClick={handleGetUser} disabled={loadingGet} className="api-btn get">
+        <button onClick={handleGetUser} disabled={loading || loadingGet} className="api-btn get">
           {loadingGet ? "Loading..." : "GET Users"}
         </button>
-        <button onClick={handleClear} className="api-btn clear">
+        <button onClick={handleClear} disabled={loading} className="api-btn clear">
           CLEAR
         </button>
       </div>
       {/* User list grid */}
-      {emptyList && (
+      {emptyList && !lastResult && (
         <div className="api-error" style={{ textAlign: "center" }}>USER TABLE IS EMPTY</div>
       )}
       {showUserList && userList.length > 0 && (
@@ -352,7 +360,7 @@ export default function ApiPracticePage() {
           onChange={e => setNewPassword(e.target.value)}
           className="api-input"
         />
-        <button onClick={handleCreateUser} disabled={loadingPost || !newName || !newPassword} className="api-btn post">
+        <button onClick={handleCreateUser} disabled={loading || loadingPost || !newName || !newPassword} className="api-btn post">
           {loadingPost ? "Loading..." : "POST User"}
         </button>
       </div>
@@ -398,7 +406,7 @@ export default function ApiPracticePage() {
           onChange={e => setUpdateName(e.target.value)}
           className="api-input"
         />
-        <button onClick={handleUpdateUser} disabled={loadingPut || !updateName || !updateId} className="api-btn put">
+        <button onClick={handleUpdateUser} disabled={loading || loadingPut || !updateName || !updateId} className="api-btn put">
           {loadingPut ? "Loading..." : "PUT User"}
         </button>
         {tokenErrorPut && <div className="api-error">{tokenErrorPut}</div>}
@@ -422,7 +430,7 @@ export default function ApiPracticePage() {
           onChange={e => setPatchName(e.target.value)}
           className="api-input"
         />
-        <button onClick={handlePatchUser} disabled={loadingPatch || !patchName || !patchId} className="api-btn patch">
+        <button onClick={handlePatchUser} disabled={loading || loadingPatch || !patchName || !patchId} className="api-btn patch">
           {loadingPatch ? "Loading..." : "PATCH User"}
         </button>
         {tokenErrorPatch && <div className="api-error">{tokenErrorPatch}</div>}
@@ -439,7 +447,7 @@ export default function ApiPracticePage() {
           inputMode="numeric"
           pattern="[0-9]*"
         />
-        <button onClick={handleDeleteUser} disabled={loadingDelete || !deleteId} className="api-btn delete">
+        <button onClick={handleDeleteUser} disabled={loading || loadingDelete || !deleteId} className="api-btn delete">
           {loadingDelete ? "Loading..." : "DELETE User"}
         </button>
         {tokenErrorDelete && <div className="api-error">{tokenErrorDelete}</div>}
