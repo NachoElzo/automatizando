@@ -1,16 +1,9 @@
 "use client";
 
 import React, { useState } from "react";
-import {
-  mockCreateUser,
-  mockUpdateUser,
-  mockPatchUser,
-  mockDeleteUser,
-} from "../../../apis/api-calls";
 import "../css/apis-page.css";
 
 export default function ApiPracticePage() {
-  // Loading states for each operation
   const [loadingGet, setLoadingGet] = useState(false);
   const [loadingPost, setLoadingPost] = useState(false);
   const [loadingPut, setLoadingPut] = useState(false);
@@ -34,102 +27,136 @@ export default function ApiPracticePage() {
   const [deleteId, setDeleteId] = useState("");
   const [deleteError, setDeleteError] = useState("");
 
-  // Local user list for UI
-  const [userList, setUserList] = useState<{ id: number; name: string }[]>([
-    { id: 1, name: "Jane Doe" }
-  ]);
-
+  const [userList, setUserList] = useState<{ id: number; name: string }[]>([]);
   const [showUserList, setShowUserList] = useState(false);
 
+  // GET
   const handleGetUser = async () => {
     setLoadingGet(true);
-    setTimeout(() => {
-      setLoadingGet(false);
-      setShowUserList(true); // Mostrar la lista solo al hacer GET
-    }, 500);
+    setShowUserList(false);
+    try {
+      const res = await fetch("/api/users");
+      if (!res.ok) throw new Error(await res.text());
+      const data = await res.json();
+      setUserList(data);
+      setShowUserList(true);
+    } catch {
+      setUserList([]);
+      setShowUserList(false);
+    }
+    setLoadingGet(false);
   };
 
+  // POST
   const handleCreateUser = async () => {
     if (!newName) return;
-    setShowUserList(false); // Oculta la lista al hacer POST
+    setShowUserList(false);
     setLoadingPost(true);
     setCreated(null);
-    const data = await mockCreateUser(newName);
-    setCreated(data);
-    setUserList(prev => [...prev, data]);
-    setLoadingPost(false);
-    setNewName("");
+    try {
+      const res = await fetch("/api/users", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: newName }),
+      });
+      const data = await res.json();
+      if (res.status === 429) {
+        setCreated(null);
+        alert("Too many requests. Please wait a moment.");
+      } else {
+        setCreated(data);
+      }
+    } finally {
+      setLoadingPost(false);
+      setNewName("");
+    }
   };
 
+  // PUT
   const handleUpdateUser = async () => {
-    setShowUserList(false); // Oculta la lista al hacer PUT
+    setShowUserList(false);
     setUpdateError("");
     const id = Number(updateId);
-    if (!id || !userList.some(u => u.id === id)) {
-      setUpdateError("The user ID does not exist.");
-      setUpdated(null);
-      return;
-    }
+    if (!id) return;
     if (!updateName) return;
     setLoadingPut(true);
     setUpdated(null);
-    const data = await mockUpdateUser(id, updateName);
-    setUpdated(data);
-    setUserList(prev =>
-      prev.map(u => (u.id === id ? { ...u, name: updateName } : u))
-    );
-    setLoadingPut(false);
-    setUpdateName("");
-    setUpdateId("");
+    try {
+      const res = await fetch("/api/users", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, name: updateName }),
+      });
+      const data = await res.json();
+      if (res.status === 404) setUpdateError("The user ID does not exist.");
+      else if (res.status === 429) alert("Too many requests. Please wait a moment.");
+      else setUpdated(data);
+    } finally {
+      setLoadingPut(false);
+      setUpdateName("");
+      setUpdateId("");
+    }
   };
 
+  // PATCH
   const handlePatchUser = async () => {
-    setShowUserList(false); // Oculta la lista al hacer PATCH
+    setShowUserList(false);
     setPatchError("");
     const id = Number(patchId);
-    if (!id || !userList.some(u => u.id === id)) {
-      setPatchError("The user ID does not exist.");
-      setPatched(null);
-      return;
-    }
+    if (!id) return;
     if (!patchName) return;
     setLoadingPatch(true);
     setPatched(null);
-    const data = await mockPatchUser(id, patchName);
-    setPatched(data);
-    setUserList(prev =>
-      prev.map(u => (u.id === id ? { ...u, name: patchName } : u))
-    );
-    setLoadingPatch(false);
-    setPatchName("");
-    setPatchId("");
+    try {
+      const res = await fetch("/api/users", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, name: patchName }),
+      });
+      const data = await res.json();
+      if (res.status === 404) setPatchError("The user ID does not exist.");
+      else if (res.status === 429) alert("Too many requests. Please wait a moment.");
+      else setPatched(data);
+    } finally {
+      setLoadingPatch(false);
+      setPatchName("");
+      setPatchId("");
+    }
   };
 
+  // DELETE
   const handleDeleteUser = async () => {
-    setShowUserList(false); // Oculta la lista al hacer DELETE
+    setShowUserList(false);
     setDeleteError("");
     const id = Number(deleteId);
-    if (!id || !userList.some(u => u.id === id)) {
-      setDeleteError("The user ID does not exist.");
-      setDeleted(null);
-      return;
-    }
+    if (!id) return;
     setLoadingDelete(true);
     setDeleted(null);
-    const data = await mockDeleteUser(id);
-    setDeleted(data);
-    setUserList(prev => prev.filter(u => u.id !== id));
-    setLoadingDelete(false);
-    setDeleteId("");
+    try {
+      const res = await fetch("/api/users", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id }),
+      });
+      const data = await res.json();
+      if (res.status === 404) setDeleteError("The user ID does not exist.");
+      else if (res.status === 429) alert("Too many requests. Please wait a moment.");
+      else setDeleted(data);
+    } finally {
+      setLoadingDelete(false);
+      setDeleteId("");
+    }
   };
 
   return (
     <div className="api-container">
-      <h1 className="api-title">API Practice (Safe Mock)</h1>
+      <h1 className="api-title">API Practice</h1>
       <p className="api-description">
         <b>Warning!</b> This API practice service is shared by the whole community.<br />
         Please use it responsibly and with caution to avoid overloading the system.<br />
-        <b>These requests are mocked</b> and do not affect any real data.<br /></p>
+        <b>These requests are mocked</b> and do not affect any real data.<br />
+        Remember: it is for learning and testing purposes only—do not abuse requests!
+      </p>
       <div className="api-section">
         <button onClick={handleGetUser} disabled={loadingGet} className="api-btn get">
           {loadingGet ? "Loading..." : "GET Users"}
@@ -171,7 +198,9 @@ export default function ApiPracticePage() {
           placeholder="User ID to update"
           value={updateId}
           onChange={e => setUpdateId(e.target.value)}
-          className="api-input id"
+          className="api-input id no-spinner"
+          inputMode="numeric"
+          pattern="[0-9]*"
         />
         <input
           type="text"
@@ -201,7 +230,9 @@ export default function ApiPracticePage() {
           placeholder="User ID to patch"
           value={patchId}
           onChange={e => setPatchId(e.target.value)}
-          className="api-input id"
+          className="api-input id no-spinner"
+          inputMode="numeric"
+          pattern="[0-9]*"
         />
         <input
           type="text"
@@ -231,7 +262,9 @@ export default function ApiPracticePage() {
           placeholder="User ID to delete"
           value={deleteId}
           onChange={e => setDeleteId(e.target.value)}
-          className="api-input id"
+          className="api-input id no-spinner"
+          inputMode="numeric"
+          pattern="[0-9]*"
         />
         <button onClick={handleDeleteUser} disabled={loadingDelete || !deleteId} className="api-btn delete">
           {loadingDelete ? "Loading..." : "DELETE User"}
