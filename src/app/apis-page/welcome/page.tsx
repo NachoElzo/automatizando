@@ -1,4 +1,5 @@
 "use client";
+export const dynamic = "force-dynamic";
 
 import { useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
@@ -44,13 +45,13 @@ function WelcomeContent() {
   };
 
   return (
-    <div className="welcome-container">
+    <div className="welcome-container welcome-taller">
       <div className="welcome-title">Welcome, {username}!</div>
       <AutomationRobot />
       <div className="welcome-message">
         {greeting} <span role="img" aria-label="cheers">🍻🍻</span>
       </div>
-      <form onSubmit={handleMockName} style={{ marginTop: "2rem" }}>
+      <form onSubmit={handleMockName} style={{ marginTop: "1.2rem" }}>
         <input
           type="text"
           placeholder="Mock new username"
@@ -68,7 +69,7 @@ function WelcomeContent() {
           {loading ? "Updating..." : "Mock Username"}
         </button>
       </form>
-      <form onSubmit={handleGreeting} style={{ marginTop: 16 }}>
+      <form onSubmit={handleGreeting} style={{ marginTop: "1.2rem" }}>
         <input
           type="text"
           placeholder="Enter your greeting"

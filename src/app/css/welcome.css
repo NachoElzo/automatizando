@@ -1,5 +1,6 @@
 .welcome-container {
-  min-height: 100vh;
+  min-height: 110vh; /* Más alto que 100vh para más espacio */
+  padding-bottom: 3rem;
   background: #f0fdf4;
   display: flex;
   flex-direction: column;
