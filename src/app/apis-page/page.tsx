@@ -12,6 +12,8 @@ export default function ApiPracticePage() {
 
   const [newName, setNewName] = useState("");
   const [created, setCreated] = useState<{ id: number; name: string } | null>(null);
+  const [createdToken, setCreatedToken] = useState<string | null>(null);
+
   const [updated, setUpdated] = useState<{ id: number; name: string } | null>(null);
   const [patched, setPatched] = useState<{ id: number; name: string } | null>(null);
   const [deleted, setDeleted] = useState<{ success: boolean; id: number } | null>(null);
@@ -26,6 +28,11 @@ export default function ApiPracticePage() {
 
   const [deleteId, setDeleteId] = useState("");
   const [deleteError, setDeleteError] = useState("");
+
+  const [userToken, setUserToken] = useState("");
+  const [tokenErrorPut, setTokenErrorPut] = useState("");
+  const [tokenErrorPatch, setTokenErrorPatch] = useState("");
+  const [tokenErrorDelete, setTokenErrorDelete] = useState("");
 
   const [userList, setUserList] = useState<{ id: number; name: string }[]>([]);
   const [showUserList, setShowUserList] = useState(false);
@@ -53,6 +60,7 @@ export default function ApiPracticePage() {
     setShowUserList(false);
     setLoadingPost(true);
     setCreated(null);
+    setCreatedToken(null);
     try {
       const res = await fetch("/api/users", {
         method: "POST",
@@ -64,7 +72,8 @@ export default function ApiPracticePage() {
         setCreated(null);
         alert("Too many requests. Please wait a moment.");
       } else {
-        setCreated(data);
+        setCreated(data.user);
+        setCreatedToken(data.token);
       }
     } finally {
       setLoadingPost(false);
@@ -76,7 +85,12 @@ export default function ApiPracticePage() {
   const handleUpdateUser = async () => {
     setShowUserList(false);
     setUpdateError("");
+    setTokenErrorPut("");
     const id = Number(updateId);
+    if (!userToken) {
+      setTokenErrorPut("You must provide the user token.");
+      return;
+    }
     if (!id) return;
     if (!updateName) return;
     setLoadingPut(true);
@@ -84,11 +98,15 @@ export default function ApiPracticePage() {
     try {
       const res = await fetch("/api/users", {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "x-user-token": userToken,
+        },
         body: JSON.stringify({ id, name: updateName }),
       });
       const data = await res.json();
-      if (res.status === 404) setUpdateError("The user ID does not exist.");
+      if (res.status === 401) setTokenErrorPut("Invalid or missing token.");
+      else if (res.status === 404) setUpdateError("The user ID does not exist.");
       else if (res.status === 429) alert("Too many requests. Please wait a moment.");
       else setUpdated(data);
     } finally {
@@ -102,7 +120,12 @@ export default function ApiPracticePage() {
   const handlePatchUser = async () => {
     setShowUserList(false);
     setPatchError("");
+    setTokenErrorPatch("");
     const id = Number(patchId);
+    if (!userToken) {
+      setTokenErrorPatch("You must provide the user token.");
+      return;
+    }
     if (!id) return;
     if (!patchName) return;
     setLoadingPatch(true);
@@ -110,11 +133,15 @@ export default function ApiPracticePage() {
     try {
       const res = await fetch("/api/users", {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "x-user-token": userToken,
+        },
         body: JSON.stringify({ id, name: patchName }),
       });
       const data = await res.json();
-      if (res.status === 404) setPatchError("The user ID does not exist.");
+      if (res.status === 401) setTokenErrorPatch("Invalid or missing token.");
+      else if (res.status === 404) setPatchError("The user ID does not exist.");
       else if (res.status === 429) alert("Too many requests. Please wait a moment.");
       else setPatched(data);
     } finally {
@@ -128,18 +155,27 @@ export default function ApiPracticePage() {
   const handleDeleteUser = async () => {
     setShowUserList(false);
     setDeleteError("");
+    setTokenErrorDelete("");
     const id = Number(deleteId);
+    if (!userToken) {
+      setTokenErrorDelete("You must provide the user token.");
+      return;
+    }
     if (!id) return;
     setLoadingDelete(true);
     setDeleted(null);
     try {
       const res = await fetch("/api/users", {
         method: "DELETE",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "x-user-token": userToken,
+        },
         body: JSON.stringify({ id }),
       });
       const data = await res.json();
-      if (res.status === 404) setDeleteError("The user ID does not exist.");
+      if (res.status === 401) setTokenErrorDelete("Invalid or missing token.");
+      else if (res.status === 404) setDeleteError("The user ID does not exist.");
       else if (res.status === 429) alert("Too many requests. Please wait a moment.");
       else setDeleted(data);
     } finally {
@@ -190,6 +226,25 @@ export default function ApiPracticePage() {
             <b>Created:</b> {created.name} (ID: {created.id})
           </div>
         )}
+        {createdToken && (
+          <div style={{ color: "#2563eb", marginTop: "0.5rem", fontWeight: 600 }}>
+            token: {createdToken}
+          </div>
+        )}
+      </div>
+      {/* TOKEN INPUT FOR PUT/PATCH/DELETE */}
+      <div className="api-section" style={{ flexDirection: "column", alignItems: "flex-start" }}>
+        <label style={{ color: "#2563eb", fontWeight: 600, marginBottom: 4 }}>
+          You must provide the user token to perform PUT, PATCH, or DELETE requests:
+        </label>
+        <input
+          type="text"
+          placeholder="User token"
+          value={userToken}
+          onChange={e => setUserToken(e.target.value)}
+          className="api-input"
+          style={{ marginBottom: 8, width: 320, maxWidth: "100%" }}
+        />
       </div>
       {/* PUT section */}
       <div className="api-section">
@@ -212,10 +267,14 @@ export default function ApiPracticePage() {
         <button onClick={handleUpdateUser} disabled={loadingPut || !updateName || !updateId} className="api-btn put">
           {loadingPut ? "Loading..." : "PUT User"}
         </button>
+        {tokenErrorPut && (
+          <div className="api-error">{tokenErrorPut}</div>
+        )}
         {updateError && (
-          <div className="api-error">
-            {updateError}
-          </div>
+          <>
+            <div className="api-error">{updateError}</div>
+            <div className="api-error">You must provide the user token.</div>
+          </>
         )}
         {updated && (
           <div className="api-result updated">
@@ -244,10 +303,14 @@ export default function ApiPracticePage() {
         <button onClick={handlePatchUser} disabled={loadingPatch || !patchName || !patchId} className="api-btn patch">
           {loadingPatch ? "Loading..." : "PATCH User"}
         </button>
+        {tokenErrorPatch && (
+          <div className="api-error">{tokenErrorPatch}</div>
+        )}
         {patchError && (
-          <div className="api-error">
-            {patchError}
-          </div>
+          <>
+            <div className="api-error">{patchError}</div>
+            <div className="api-error">You must provide the user token.</div>
+          </>
         )}
         {patched && (
           <div className="api-result patched">
@@ -269,10 +332,14 @@ export default function ApiPracticePage() {
         <button onClick={handleDeleteUser} disabled={loadingDelete || !deleteId} className="api-btn delete">
           {loadingDelete ? "Loading..." : "DELETE User"}
         </button>
+        {tokenErrorDelete && (
+          <div className="api-error">{tokenErrorDelete}</div>
+        )}
         {deleteError && (
-          <div className="api-error">
-            {deleteError}
-          </div>
+          <>
+            <div className="api-error">{deleteError}</div>
+            <div className="api-error">You must provide the user token.</div>
+          </>
         )}
         {deleted && (
           <div className={`api-result ${deleted.success ? "deleted" : "error"}`}>
