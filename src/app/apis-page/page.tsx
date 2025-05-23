@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import "../css/apis-page.css";
 
 export default function ApiPracticePage() {
@@ -30,6 +30,8 @@ export default function ApiPracticePage() {
   const [passwordErrorPatch, setPasswordErrorPatch] = useState("");
   const [passwordErrorDelete, setPasswordErrorDelete] = useState("");
 
+  const getRequestId = useRef(0);
+
   type User = {
     id: number;
     name: string;
@@ -50,10 +52,25 @@ export default function ApiPracticePage() {
     setLoadingGet(true);
     setLastResult(null);
     setEmptyList(false);
+
+    // Incrementa el contador y captura el id de este request
+    const currentRequest = ++getRequestId.current;
+
     try {
       const res = await fetch("/api/users");
-      if (!res.ok) throw new Error(await res.text());
+      if (!res.ok) {
+        if (res.status === 429) {
+          setLastResult(<div className="api-error">Too many requests. Please wait a moment.</div>);
+        }
+        setLoadingGet(false);
+        setLoading(false);
+        return;
+      }
       const data = await res.json();
+
+      // Solo actualiza el estado si este es el último request
+      if (currentRequest !== getRequestId.current) return;
+
       if (!data || data.length === 0) {
         setUserList([]);
         setShowUserList(false);
@@ -64,13 +81,18 @@ export default function ApiPracticePage() {
         setShowUserList(true);
         setEmptyList(false);
         setLastResult(null);
-        // Detecta columnas disponibles
         if (data.length > 0) {
           const keys = Object.keys(data[0]);
-          setColumns(["id", "name", ...(keys.includes("password") ? ["password"] : []), ...(keys.includes("token") ? ["token"] : [])]);
+          setColumns([
+            "id",
+            "name",
+            ...(keys.includes("password") ? ["password"] : []),
+            ...(keys.includes("token") ? ["token"] : []),
+          ]);
         }
       }
     } catch {
+      if (currentRequest !== getRequestId.current) return;
       setUserList([]);
       setShowUserList(false);
       setEmptyList(true);
@@ -82,6 +104,8 @@ export default function ApiPracticePage() {
 
   // POST
   const handleCreateUser = async () => {
+    setShowUserList(false);
+    setUserList([]);
     if (!newName || !newPassword) return;
     setLastResult(null);
     setEmptyList(false); // Oculta el label de tabla vacía al crear usuario
@@ -97,14 +121,17 @@ export default function ApiPracticePage() {
         alert("Too many requests. Please wait a moment.");
       } else {
         setLastResult(
-          <div className="user-credentials-label">
+          <div className="user-credentials-label" style={{ fontSize: "0.93rem", display: "flex", gap: "1.5rem", alignItems: "center" }}>
             <span>
-              <b>User:</b> {data.user.name} (ID: {data.user.id})
+              <b>ID:</b> {data.user.id}
             </span>
-            <span style={{ marginLeft: "1.5rem" }}>
+            <span>
+              <b>User:</b> {data.user.name}
+            </span>
+            <span>
               <b>password:</b> {data.user.password}
             </span>
-            <span style={{ marginLeft: "1.5rem" }}>
+            <span>
               <b>token:</b> {data.user.token}
             </span>
           </div>
@@ -121,6 +148,8 @@ export default function ApiPracticePage() {
 
   // PUT
   const handleUpdateUser = async () => {
+    setShowUserList(false);
+    setUserList([]);
     setLastResult(null);
     setTokenErrorPut("");
     setPasswordErrorPut("");
@@ -174,6 +203,8 @@ export default function ApiPracticePage() {
 
   // PATCH
   const handlePatchUser = async () => {
+    setShowUserList(false);
+    setUserList([]);
     setLastResult(null);
     setTokenErrorPatch("");
     setPasswordErrorPatch("");
@@ -227,6 +258,8 @@ export default function ApiPracticePage() {
 
   // DELETE
   const handleDeleteUser = async () => {
+    setShowUserList(false);
+    setUserList([]);
     setLastResult(null);
     setTokenErrorDelete("");
     setPasswordErrorDelete("");
@@ -282,6 +315,7 @@ export default function ApiPracticePage() {
     await fetch("/api/users/all", { method: "DELETE" });
     setUserList([]);
     setShowUserList(false);
+    setColumns(["id", "name", "password", "token"]);
     setLastResult(null);
     setUpdateId("");
     setUpdateName("");
@@ -319,6 +353,11 @@ export default function ApiPracticePage() {
           CLEAR
         </button>
       </div>
+      {/* Mensaje de error o resultado de GET justo debajo de los botones */}
+      {lastResult && (
+        <div style={{ margin: "12px 0" }}>
+        </div>
+      )}
       {/* User list grid */}
       {emptyList && !lastResult && (
         <div className="api-error" style={{ textAlign: "center" }}>USER TABLE IS EMPTY</div>
@@ -352,6 +391,7 @@ export default function ApiPracticePage() {
           value={newName}
           onChange={e => setNewName(e.target.value)}
           className="api-input"
+          maxLength={15}
         />
         <input
           type="text"
@@ -359,24 +399,20 @@ export default function ApiPracticePage() {
           value={newPassword}
           onChange={e => setNewPassword(e.target.value)}
           className="api-input"
+          maxLength={15}
         />
+  
         <button onClick={handleCreateUser} disabled={loading || loadingPost || !newName || !newPassword} className="api-btn post">
           {loadingPost ? "Loading..." : "POST User"}
         </button>
+      {/* USER RESULT */}
+        {lastResult}
       </div>
       {/* TOKEN & PASSWORD INPUT FOR PUT/PATCH/DELETE */}
       <div className="api-section" style={{ flexDirection: "column", alignItems: "flex-start" }}>
         <label className="api-helper-label-red">
-          You must provide the user token and password to perform PUT, PATCH, or DELETE requests:
+          You must provide the user password and token to perform PUT, PATCH, or DELETE requests:
         </label>
-        <input
-          type="text"
-          placeholder="User token"
-          value={userToken}
-          onChange={e => setUserToken(e.target.value)}
-          className="api-input"
-          style={{ marginBottom: 8, width: 320, maxWidth: "100%" }}
-        />
         <input
           type="text"
           placeholder="User password"
@@ -384,10 +420,18 @@ export default function ApiPracticePage() {
           onChange={e => setUserPassword(e.target.value)}
           className="api-input"
           style={{ marginBottom: 8, width: 320, maxWidth: "100%" }}
+          maxLength={15}
+        />
+        <input
+          type="text"
+          placeholder="User token"
+          value={userToken}
+          onChange={e => setUserToken(e.target.value)}
+          className="api-input"
+          style={{ marginBottom: 8, width: 320, maxWidth: "100%" }}
+          maxLength={15}
         />
       </div>
-      {/* ÚLTIMO LABEL DE RESULTADO */}
-      {lastResult}
       {/* PUT */}
       <div className="api-section">
         <input
