@@ -1,0 +1,102 @@
+.api-container {
+  max-width: 600px; /* Aumenta el ancho */
+  margin: 3rem auto;
+  padding: 2rem;
+  background: #f0fdf4;
+  border-radius: 1rem;
+  border: 1.5px solid #22c55e;
+}
+
+.api-title {
+  color: #2563eb;
+  text-align: center;
+}
+
+.api-description {
+  color: #15803d;
+  text-align: center;
+}
+
+.api-section {
+  margin: 2rem 0 1.5rem 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.api-user-list {
+  margin-top: 1rem;
+  color: #2563eb;
+  width: 100%;
+}
+
+.api-input {
+  padding: 0.5rem;
+  border-radius: 0.3rem;
+  border: 1.5px solid #22c55e;
+  margin-right: 0.5rem;
+  font-size: 1rem;
+}
+
+.api-input.id {
+  width: 120px;
+}
+
+.api-btn {
+  padding: 0.6rem 1.2rem;
+  border-radius: 0.5rem;
+  border: none;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  min-width: 140px; /* Tamaño uniforme para todos los botones */
+  box-sizing: border-box;
+}
+
+.api-btn.get {
+  background: #22c55e;
+  color: #fff;
+}
+
+.api-btn.post {
+  background: #16a34a;
+  color: #fff;
+}
+
+.api-btn.put {
+  background: #2563eb;
+  color: #fff;
+}
+
+.api-btn.patch {
+  background: #f59e42; /* Naranja, diferente a los otros */
+  color: #fff;
+}
+
+.api-btn.delete {
+  background: #dc2626;
+  color: #fff;
+}
+
+.api-result {
+  margin-top: 1rem;
+  font-weight: 500;
+}
+
+.api-result.created,
+.api-result.updated,
+.api-result.patched {
+  color: #2563eb;
+}
+
+.api-result.deleted {
+  color: #dc2626; /* Rojo para el mensaje de deleted */
+}
+
+.api-error,
+.api-result.error {
+  color: #dc2626;
+  margin-top: 0.5rem;
+  font-weight: 500;
+}
