@@ -190,3 +190,61 @@
 .api-user-list-grid td {
   color: #2563eb;
 }
+
+/* RESPONSIVE DESIGN FOR MOBILE */
+@media (max-width: 600px) {
+  .api-container {
+    max-width: 98vw;
+    padding: 1rem 0.5rem;
+    border-radius: 0.7rem;
+  }
+
+  .api-title,
+  .api-description {
+    font-size: 1.1rem;
+    padding-left: 0.2rem;
+    padding-right: 0.2rem;
+  }
+
+  .api-section {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.7rem;
+    margin: 1.2rem 0 1rem 0;
+  }
+
+  .api-input,
+  .api-input.id {
+    width: 100%;
+    min-width: 0;
+    margin-right: 0;
+    font-size: 1rem;
+  }
+
+  .api-btn {
+    min-width: 0;
+    width: 100%;
+    font-size: 1rem;
+    padding: 0.7rem 0.5rem;
+    margin-left: 0 !important;
+  }
+
+  .api-user-list-grid {
+    margin-bottom: 1rem;
+  }
+
+  .api-user-list-grid table,
+  .api-user-list-grid th,
+  .api-user-list-grid td {
+    font-size: 0.93rem;
+    padding: 0.45rem 0.3rem;
+    word-break: break-word;
+  }
+
+  .user-credentials-label {
+    flex-direction: column;
+    gap: 0.5rem;
+    font-size: 0.98rem;
+    padding: 0.5rem 0.5rem;
+  }
+}

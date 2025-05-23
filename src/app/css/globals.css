@@ -41,26 +41,6 @@ a {
   text-decoration: none; /* Elimina el subrayado */
   color: inherit; /* Hereda el color del texto del elemento padre */
 }
-/* Login Button Styles */
-.login-button {
-  margin-right: 30px;
-  font-size: 1rem;
-  font-weight: 200;
-  cursor: pointer;
-  background-color: #22c55e; /* Tailwind's green-500 (verde semáforo) */
-  color: white;
-  padding: 0.75rem 1.5rem;
-  border-radius: 0.5rem;
-  position: absolute; /* Asegura que el botón esté en la esquina superior derecha */
-  top: 1rem;
-  right: 1rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra sutil */
-  transition: background-color 0.3s ease;
-}
-
-.login-button:hover {
-  background-color: #16a34a; /* Tailwind's green-600 */
-}
 
 /* Grid Container Styles */
 .grid-container {
@@ -115,90 +95,17 @@ a {
   line-height: 1.5;
 }
 
-/* Popup Styles */
-.popup {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5); /* Fondo semitransparente */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
-
-.popup-content {
-  background-color: #ffffff;
-  padding: 2rem;
-  border-radius: 0.5rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  text-align: center;
-  width: 90%;
-  max-width: 400px;
-}
-
-.popup-title {
-  font-size: 1.5rem;
-  font-weight: bold;
-  margin-bottom: 1rem;
-  color: #939494; /* Cambia el color del título a verde (Tailwind's green-500) */
-}
-
-.popup-label {
-  display: block;
-  font-size: 1rem;
-  font-weight: 500;
-  margin-bottom: 0.5rem;
-  color: #555;
-  text-align: left;
-}
-
-.popup-input {
-  width: 100%;
-  padding: 0.5rem;
-  margin-bottom: 1rem;
-  border: 1px solid #ccc;
-  border-radius: 0.25rem;
-  font-size: 1rem;
-  box-sizing: border-box;
-}
-
-.popup-error {
-  color: red;
-  font-size: 0.875rem;
-  margin-bottom: 1rem;
-}
-
-.popup-message {
-  font-size: 1rem;
-  color: #333;
-  margin-bottom: 1rem;
-}
-
-.popup-button {
-  background-color: #007bff;
-  color: white;
-  padding: 0.5rem 1rem;
-  border: none;
-  border-radius: 0.25rem;
-  font-size: 1rem;
-  cursor: pointer;
-  margin: 0.5rem;
-}
-
-.popup-button:hover {
-  background-color: #0056b3;
-}
-
-.popup-info {
-  font-size: 0.875rem;
-  color: red; /* Cambia el texto a rojo */
-  margin-bottom: 1rem;
-  text-align: left;
-}
-
+/* Elimina todo lo relacionado con .login-button y .popup */
+.login-button,
+.popup,
+.popup-content,
+.popup-title,
+.popup-label,
+.popup-input,
+.popup-error,
+.popup-message,
+.popup-button,
+.popup-info,
 .popup-info strong {
-  color: red; /* Asegura que las partes en negrita también sean rojas */
+  display: none !important;
 }
