@@ -25,6 +25,27 @@
   gap: 0.5rem;
 }
 
+.api-section-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.api-section-col {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.api-center {
+  text-align: center;
+}
+
+.api-login-module {
+  margin-top: 2.5rem;
+}
+
 .api-user-list {
   margin-top: 1rem;
   color: #2563eb;
@@ -191,6 +212,127 @@
   color: #2563eb;
 }
 
+/* POPUP MODAL (used for table full and login success) */
+.popup-overlay {
+  position: fixed;
+  z-index: 9999;
+  inset: 0;
+  background: rgba(0,0,0,0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.popup-modal {
+  background: #fff;
+  border-radius: 1rem;
+  padding: 2.2rem 2.5rem 2rem 2.5rem;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 320px;
+  max-width: 90vw;
+}
+
+.popup-warning {
+  color: #dc2626;
+  font-size: 1.25rem;
+  font-weight: bold;
+  margin-bottom: 0.7rem;
+  text-align: center;
+}
+
+.popup-message {
+  color: #15803d;
+  font-size: 1rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.popup-btn {
+  background: #22c55e;
+  color: #fff;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.7rem 2.2rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.popup-btn:hover {
+  background: #16a34a;
+}
+
+/* Robot animation inside popup */
+.popup-modal-robot {
+  width: 30vw;
+  min-width: 260px;
+  max-width: 420px;
+  min-height: 320px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.robot-animation {
+  width: 90px;
+  height: 90px;
+  margin: 0 auto 1.2rem auto;
+  background: linear-gradient(135deg, #2563eb 60%, #22c55e 100%);
+  border-radius: 50%;
+  position: relative;
+  animation: robot-bounce 1.2s infinite alternate;
+  box-shadow: 0 0 0 6px #e0fbe3;
+}
+.robot-animation::before {
+  content: "";
+  position: absolute;
+  left: 22px;
+  top: 25px;
+  width: 16px;
+  height: 16px;
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 30px 0 #fff;
+}
+.robot-animation::after {
+  content: "";
+  position: absolute;
+  left: 35px;
+  top: 60px;
+  width: 20px;
+  height: 8px;
+  background: #fff;
+  border-radius: 8px/4px;
+}
+@keyframes robot-bounce {
+  0% { transform: translateY(0);}
+  100% { transform: translateY(-18px);}
+}
+
+@media (max-width: 900px) {
+  .popup-modal-robot {
+    width: 90vw;
+    min-width: 0;
+    max-width: 98vw;
+  }
+}
+
+/* LOGIN MODULE RESPONSIVE & NESTED CONTAINER FIX */
+.api-container .api-container {
+  margin-top: 2.5rem !important;
+  background: #f0fdf4;
+  border-radius: 1rem;
+  border: 1.5px solid #22c55e;
+  padding: 2rem;
+  max-width: 600px;
+  width: 100%;
+}
+
 /* RESPONSIVE DESIGN FOR MOBILE */
 @media (max-width: 600px) {
   .api-container {
@@ -246,5 +388,10 @@
     gap: 0.5rem;
     font-size: 0.98rem;
     padding: 0.5rem 0.5rem;
+  }
+
+  .api-container .api-container {
+    margin-top: 1.5rem !important;
+    padding: 1rem 0.5rem !important;
   }
 }

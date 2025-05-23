@@ -29,7 +29,26 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Too many requests" }, { status: 429 });
   }
   lastRequest[ip] = Date.now();
-  const { name, password } = await req.json();
+  const body = await req.json();
+
+  // LOGIN MOCK (NO id, solo name, password, token)
+  if (body.login) {
+    const { name, password, token } = body;
+    const user = users.find(
+      (u) => u.name === name && u.password === password && u.token === token
+    );
+    if (user) {
+      return NextResponse.json({ user });
+    } else {
+      return NextResponse.json(
+        { error: "Invalid credentials." },
+        { status: 401 }
+      );
+    }
+  }
+
+  // ...existing user creation logic...
+  const { name, password } = body;
   const token = generateToken();
   const user = { id: Math.floor(Math.random() * 10000), name, password, token };
   users.push(user);

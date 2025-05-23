@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import "../css/apis-page.css";
 
 export default function ApiPracticePage() {
@@ -319,6 +319,85 @@ export default function ApiPracticePage() {
     setPasswordErrorDelete("");
   };
 
+  // --- LOGIN MODULE STATE ---
+  const [loginUser, setLoginUser] = useState("");
+  const [loginPassword, setLoginPassword] = useState("");
+  const [loginToken, setLoginToken] = useState("");
+  const [loginLoading, setLoginLoading] = useState(false);
+  const [loginError, setLoginError] = useState("");
+
+  // Limpiar error al cambiar campos
+  useEffect(() => {
+    setLoginError("");
+  }, [loginUser, loginPassword, loginToken]);
+
+  // --- LOGIN HANDLER ---
+  const handleLogin = async () => {
+    setLoginError("");
+    if (!loginUser || !loginPassword || !loginToken) {
+      setLoginError("All fields are required.");
+      return;
+    }
+    if (
+      loginUser.length > 15 ||
+      loginPassword.length > 15 ||
+      loginToken.length > 15
+    ) {
+      setLoginError("Each field must be 15 characters or less.");
+      return;
+    }
+    setLoginLoading(true);
+    try {
+      const res = await fetch("/api/users", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          login: true,
+          name: loginUser,
+          password: loginPassword,
+          token: loginToken,
+        }),
+      });
+      const data = await res.json();
+
+      if (res.ok && data && data.user) {
+        // Save credentials to localStorage and cookies
+        if (typeof window !== "undefined") {
+          localStorage.setItem("api-demo-user", loginUser);
+          localStorage.setItem("api-demo-token", loginToken);
+          localStorage.setItem("api-demo-password", loginPassword);
+          document.cookie = `api-demo-user=${loginUser}; path=/`;
+          document.cookie = `api-demo-token=${loginToken}; path=/`;
+          document.cookie = `api-demo-password=${loginPassword}; path=/`;
+        }
+        // Limpiar los campos de login
+        setLoginUser("");
+        setLoginPassword("");
+        setLoginToken("");
+        // Redirigir a la página de bienvenida en una ventana pequeña
+        if (typeof window !== "undefined") {
+          const width = Math.round(window.screen.width * 0.3);
+          const height = 420;
+          const left = Math.round(window.screen.width * 0.35);
+          const top = Math.round(window.screen.height * 0.15);
+          window.open(
+            "/apis-page/welcome?username=" + encodeURIComponent(data.user.name),
+            "automation-welcome",
+            `width=${width},height=${height},left=${left},top=${top},resizable=no,scrollbars=no`
+          );
+        }
+      } else if (data && data.error) {
+        setLoginError(data.error);
+      } else {
+        setLoginError("Invalid credentials or user not found.");
+      }
+    } catch {
+      setLoginError("Network or server error.");
+    }
+    setLoginLoading(false);
+  };
+
+  // --- RENDER ---
   return (
     <div className="api-container">
       {/* POPUP MODAL */}
@@ -346,7 +425,7 @@ export default function ApiPracticePage() {
         <b>These requests are mocked</b> and do not affect any real data.<br />
         Remember: it is for learning and testing purposes only—do not abuse requests!
       </p>
-      <div className="api-section" style={{ justifyContent: "space-between" }}>
+      <div className="api-section api-section-row">
         <button onClick={handleGetUser} disabled={loading || loadingGet} className="api-btn get">
           {loadingGet ? "Loading..." : "GET Users"}
         </button>
@@ -356,7 +435,7 @@ export default function ApiPracticePage() {
       </div>
       {/* User list grid */}
       {emptyList && !lastResult && (
-        <div className="api-error" style={{ textAlign: "center" }}>USER TABLE IS EMPTY</div>
+        <div className="api-error api-center">USER TABLE IS EMPTY</div>
       )}
       {showUserList && userList.length > 0 && (
         <div className="api-user-list-grid">
@@ -404,7 +483,7 @@ export default function ApiPracticePage() {
         {lastResult}
       </div>
       {/* TOKEN & PASSWORD INPUT FOR PUT/PATCH/DELETE */}
-      <div className="api-section" style={{ flexDirection: "column", alignItems: "flex-start" }}>
+      <div className="api-section api-section-col">
         <label className="api-helper-label-red">
           You must provide the user password and token to perform PUT, PATCH, or DELETE requests:
         </label>
@@ -414,7 +493,6 @@ export default function ApiPracticePage() {
           value={userPassword}
           onChange={e => setUserPassword(e.target.value.slice(0, 15))}
           className="api-input"
-          style={{ marginBottom: 8, width: 320, maxWidth: "100%" }}
           maxLength={15}
         />
         <input
@@ -423,7 +501,6 @@ export default function ApiPracticePage() {
           value={userToken}
           onChange={e => setUserToken(e.target.value.slice(0, 15))}
           className="api-input"
-          style={{ marginBottom: 8, width: 320, maxWidth: "100%" }}
           maxLength={15}
         />
       </div>
@@ -493,6 +570,53 @@ export default function ApiPracticePage() {
         </button>
         {tokenErrorDelete && <div className="api-error">{tokenErrorDelete}</div>}
         {passwordErrorDelete && <div className="api-error">{passwordErrorDelete}</div>}
+      </div>
+
+      {/* LOGIN MODULE */}
+      <div className="api-login-module" style={{ marginTop: "4rem" }}>
+        <h2 className="api-title">Login with API User</h2>
+        <p className="api-description">
+          <b>How to log in:</b> Enter the <b>User Name</b>, <b>Password</b>, and <b>Token</b> of a user you created above.<br />
+          All fields are required and must be 15 characters or less.<br />
+          On success, your credentials will be saved in local storage and cookies for testing.
+        </p>
+        <div className="api-section">
+          <input
+            type="text"
+            placeholder="User name"
+            value={loginUser}
+            onChange={e => setLoginUser(e.target.value.slice(0, 15))}
+            className="api-input"
+            maxLength={15}
+            autoComplete="username"
+          />
+          <input
+            type="text"
+            placeholder="Password"
+            value={loginPassword}
+            onChange={e => setLoginPassword(e.target.value.slice(0, 15))}
+            className="api-input"
+            maxLength={15}
+            autoComplete="current-password"
+          />
+          <input
+            type="text"
+            placeholder="Token"
+            value={loginToken}
+            onChange={e => setLoginToken(e.target.value.slice(0, 15))}
+            className="api-input"
+            maxLength={15}
+            autoComplete="off"
+          />
+          <button
+            onClick={handleLogin}
+            disabled={loginLoading || !loginUser || !loginPassword || !loginToken}
+            className="api-btn post"
+          >
+            {loginLoading ? "Logging in..." : "Login"}
+          </button>
+        </div>
+        {loginError && <div className="api-error">{loginError}</div>}
       </div>
     </div>
   );
