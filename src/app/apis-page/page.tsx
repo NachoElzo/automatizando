@@ -14,6 +14,7 @@ export default function ApiPracticePage() {
   const [newPassword, setNewPassword] = useState("");
   const [created, setCreated] = useState<{ id: number; name: string } | null>(null);
   const [createdToken, setCreatedToken] = useState<string | null>(null);
+  const [createdPassword, setCreatedPassword] = useState<string | null>(null);
 
   const [updated, setUpdated] = useState<{ id: number; name: string } | null>(null);
   const [patched, setPatched] = useState<{ id: number; name: string } | null>(null);
@@ -39,22 +40,40 @@ export default function ApiPracticePage() {
   const [passwordErrorPatch, setPasswordErrorPatch] = useState("");
   const [passwordErrorDelete, setPasswordErrorDelete] = useState("");
 
-  const [userList, setUserList] = useState<{ id: number; name: string }[]>([]);
+  type User = {
+    id: number;
+    name: string;
+    password?: string;
+    token?: string;
+  };
+  const [userList, setUserList] = useState<User[]>([]);
   const [showUserList, setShowUserList] = useState(false);
+  const [emptyList, setEmptyList] = useState(false);
 
   // GET
   const handleGetUser = async () => {
     setLoadingGet(true);
     setShowUserList(false);
+    setCreated(null);
+    setCreatedToken(null);
+    setCreatedPassword(null);
+    setEmptyList(false);
     try {
       const res = await fetch("/api/users");
       if (!res.ok) throw new Error(await res.text());
       const data = await res.json();
-      setUserList(data);
-      setShowUserList(true);
+      if (!data || data.length === 0) {
+        setUserList([]);
+        setShowUserList(false);
+        setEmptyList(true);
+      } else {
+        setUserList(data);
+        setShowUserList(true);
+      }
     } catch {
       setUserList([]);
       setShowUserList(false);
+      setEmptyList(true);
     }
     setLoadingGet(false);
   };
@@ -66,6 +85,7 @@ export default function ApiPracticePage() {
     setLoadingPost(true);
     setCreated(null);
     setCreatedToken(null);
+    setCreatedPassword(null);
     try {
       const res = await fetch("/api/users", {
         method: "POST",
@@ -79,6 +99,7 @@ export default function ApiPracticePage() {
       } else {
         setCreated(data.user);
         setCreatedToken(data.token);
+        setCreatedPassword(newPassword);
       }
     } finally {
       setLoadingPost(false);
@@ -90,6 +111,9 @@ export default function ApiPracticePage() {
   // PUT
   const handleUpdateUser = async () => {
     setShowUserList(false);
+    setCreated(null);
+    setCreatedToken(null);
+    setCreatedPassword(null);
     setUpdateError("");
     setTokenErrorPut("");
     setPasswordErrorPut("");
@@ -134,6 +158,9 @@ export default function ApiPracticePage() {
   // PATCH
   const handlePatchUser = async () => {
     setShowUserList(false);
+    setCreated(null);
+    setCreatedToken(null);
+    setCreatedPassword(null);
     setPatchError("");
     setTokenErrorPatch("");
     setPasswordErrorPatch("");
@@ -178,6 +205,9 @@ export default function ApiPracticePage() {
   // DELETE
   const handleDeleteUser = async () => {
     setShowUserList(false);
+    setCreated(null);
+    setCreatedToken(null);
+    setCreatedPassword(null);
     setDeleteError("");
     setTokenErrorDelete("");
     setPasswordErrorDelete("");
@@ -217,6 +247,37 @@ export default function ApiPracticePage() {
     }
   };
 
+  // CLEAR
+  const handleClear = () => {
+    setUserList([]);
+    setShowUserList(false);
+    setCreated(null);
+    setCreatedToken(null);
+    setCreatedPassword(null);
+    setUpdated(null);
+    setPatched(null);
+    setDeleted(null);
+    setUpdateId("");
+    setUpdateName("");
+    setPatchId("");
+    setPatchName("");
+    setDeleteId("");
+    setUserToken("");
+    setUserPassword("");
+    setUpdateError("");
+    setPatchError("");
+    setDeleteError("");
+    setTokenErrorPut("");
+    setTokenErrorPatch("");
+    setTokenErrorDelete("");
+    setPasswordErrorPut("");
+    setPasswordErrorPatch("");
+    setPasswordErrorDelete("");
+    setNewName("");
+    setNewPassword("");
+    setEmptyList(false);
+  };
+
   return (
     <div className="api-container">
       <h1 className="api-title">API Practice</h1>
@@ -226,23 +287,42 @@ export default function ApiPracticePage() {
         <b>These requests are mocked</b> and do not affect any real data.<br />
         Remember: it is for learning and testing purposes only—do not abuse requests!
       </p>
-      <div className="api-section">
+      <div className="api-section" style={{ justifyContent: "space-between" }}>
         <button onClick={handleGetUser} disabled={loadingGet} className="api-btn get">
           {loadingGet ? "Loading..." : "GET Users"}
         </button>
-        {showUserList && (
-          <div className="api-user-list">
-            <b>User List:</b>
-            <ul>
-              {userList.map(u => (
-                <li key={u.id}>
-                  {u.name} (ID: {u.id})
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
+        <button onClick={handleClear} className="api-btn clear">
+          CLEAR
+        </button>
       </div>
+      {/* User list grid */}
+      {emptyList && (
+        <div className="api-error" style={{ textAlign: "center" }}>EMPTY LIST</div>
+      )}
+      {showUserList && (
+        <div className="api-user-list-grid">
+          <table>
+            <thead>
+              <tr>
+                <th>User ID</th>
+                <th>User Name</th>
+                <th>Password</th>
+                <th>Token</th>
+              </tr>
+            </thead>
+            <tbody>
+              {userList.map(u => (
+                <tr key={u.id}>
+                  <td>{u.id}</td>
+                  <td>{u.name}</td>
+                  <td>{u.password}</td>
+                  <td>{u.token}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
       <div className="api-section">
         <input
           type="text"
@@ -252,7 +332,7 @@ export default function ApiPracticePage() {
           className="api-input"
         />
         <input
-          type="password"
+          type="text"
           placeholder="New user password"
           value={newPassword}
           onChange={e => setNewPassword(e.target.value)}
@@ -261,20 +341,29 @@ export default function ApiPracticePage() {
         <button onClick={handleCreateUser} disabled={loadingPost || !newName || !newPassword} className="api-btn post">
           {loadingPost ? "Loading..." : "POST User"}
         </button>
-        {created && (
-          <div className="api-result created">
-            <b>Created:</b> {created.name} (ID: {created.id})
-          </div>
-        )}
-        {createdToken && (
-          <div style={{ color: "#2563eb", marginTop: "0.5rem", fontWeight: 600 }}>
-            token: {createdToken}
+        {(created || createdToken || createdPassword) && (
+          <div className="user-credentials-label">
+            {created && (
+              <span>
+                <b>User:</b> {created.name} (ID: {created.id})
+              </span>
+            )}
+            {createdToken && (
+              <span style={{ marginLeft: "1.5rem" }}>
+                <b>token:</b> {createdToken}
+              </span>
+            )}
+            {createdPassword && (
+              <span style={{ marginLeft: "1.5rem" }}>
+                <b>password:</b> {createdPassword}
+              </span>
+            )}
           </div>
         )}
       </div>
       {/* TOKEN & PASSWORD INPUT FOR PUT/PATCH/DELETE */}
       <div className="api-section" style={{ flexDirection: "column", alignItems: "flex-start" }}>
-        <label style={{ color: "#2563eb", fontWeight: 600, marginBottom: 4 }}>
+        <label className="api-helper-label-red">
           You must provide the user token to perform PUT, PATCH, or DELETE requests:
         </label>
         <input
@@ -285,11 +374,11 @@ export default function ApiPracticePage() {
           className="api-input"
           style={{ marginBottom: 8, width: 320, maxWidth: "100%" }}
         />
-        <label style={{ color: "#2563eb", fontWeight: 600, marginBottom: 4 }}>
+        <label className="api-helper-label-red">
           You must provide the user password to perform PUT, PATCH, or DELETE requests:
         </label>
         <input
-          type="password"
+          type="text"
           placeholder="User password"
           value={userPassword}
           onChange={e => setUserPassword(e.target.value)}

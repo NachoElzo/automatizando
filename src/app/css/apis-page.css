@@ -90,6 +90,15 @@
   color: #fff;
 }
 
+.api-btn.clear {
+  background: #22c55e; /* Igual que GET */
+  color: #fff;
+  font-weight: 700;
+  border: none;
+  min-width: 100px;
+  margin-left: auto;
+}
+
 .api-result {
   margin-top: 1rem;
   font-weight: 500;
@@ -110,4 +119,74 @@
   color: #dc2626;
   margin-top: 0.5rem;
   font-weight: 500;
+}
+
+.user-credentials-label {
+  border: 1.5px solid #15803d;
+  background: #e0fbe3;
+  color: #15803d;
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+  margin-top: 0.7rem;
+  font-size: 1rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.api-helper-label {
+  color: #15803d;
+  font-size: 0.95rem;
+  font-style: italic;
+  margin-bottom: 4px;
+}
+
+.api-helper-label-small {
+  color: #f59e42;
+  font-size: 0.85rem;
+  font-style: italic;
+  margin-bottom: 4px;
+}
+
+.api-helper-label-warning {
+  color: #15803d; /* Igual que .api-description */
+  font-size: 0.8rem;
+  font-style: italic;
+  margin-bottom: 4px;
+}
+
+.api-helper-label-red {
+  color: #dc2626;
+  font-size: 0.8rem;
+  font-style: italic;
+  margin-bottom: 4px;
+}
+
+.api-user-list-grid {
+  width: 100%;
+  overflow-x: auto;
+  margin-bottom: 1.5rem;
+}
+.api-user-list-grid table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+  background: #fff;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  font-size: 0.97rem;
+}
+.api-user-list-grid th, .api-user-list-grid td {
+  border: 1px solid #22c55e;
+  padding: 0.5rem 0.7rem;
+  text-align: left;
+}
+.api-user-list-grid th {
+  background: #e0fbe3;
+  color: #15803d;
+  font-weight: 700;
+}
+.api-user-list-grid td {
+  color: #2563eb;
 }
