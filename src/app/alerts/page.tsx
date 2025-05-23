@@ -11,12 +11,13 @@ const alertOptions = [
   { value: "modal", label: "Modal Popup", type: "popup" },
 ];
 
+// Solo busca por las dos primeras letras
 function getFilteredOptions(input: string) {
   const lower = input.toLowerCase();
-  if (!input) return alertOptions; // Show all options if input is empty
-  if (lower === "alert") return alertOptions.filter(o => o.type === "alert");
-  if (lower === "popup" || lower === "pop") return alertOptions.filter(o => o.type === "popup");
-  if (lower === "modal") return alertOptions.filter(o => o.value === "modal");
+  if (!input) return alertOptions;
+  if (lower.startsWith("al")) return alertOptions.filter(o => o.type === "alert");
+  if (lower.startsWith("po")) return alertOptions.filter(o => o.type === "popup");
+  if (lower.startsWith("mo")) return alertOptions.filter(o => o.value === "modal");
   if (lower === "1") return alertOptions.filter(o => o.value === "alert1");
   if (lower === "2") return alertOptions.filter(o => o.value === "alert2");
   if (lower === "3") return alertOptions.filter(o => o.value === "alert3");
@@ -30,21 +31,48 @@ export default function AlertsPractice() {
   const [input, setInput] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
   const [showAlert, setShowAlert] = useState<string | null>(null);
+  const [bubble, setBubble] = useState<{ type: string; msg: string } | null>(null);
+  const [showPopup, setShowPopup] = useState(false);
 
   const filteredOptions = getFilteredOptions(input);
 
   function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
     const val = e.target.value;
     setInput(val);
-    // Only show dropdown if input has at least 2 characters and there are options
     setShowDropdown(val.length >= 2 && getFilteredOptions(val).length > 0);
     setShowAlert(null);
   }
 
   function handleSelect(option: typeof alertOptions[0]) {
     setShowDropdown(false);
-    setInput(""); // Clear input after selection
-    setShowAlert(option.value);
+    setInput("");
+    // Alertas tipo burbuja emergente
+    if (option.value === "alert1") {
+      setBubble({ type: "info", msg: "Alert Type 1: This is a simple info alert. ℹ️" });
+      setTimeout(() => setBubble(null), 2200);
+      return;
+    }
+    if (option.value === "alert2") {
+      setBubble({ type: "warning", msg: "Alert Type 2: Warning! Something needs your attention. ⚠️" });
+      setTimeout(() => setBubble(null), 2200);
+      return;
+    }
+    // Alert 3: nativa sin estilos
+    if (option.value === "alert3") {
+      window.alert("Alert Type 3: Success! Everything went well. ✅");
+      return;
+    }
+    // Popup animado que desaparece solo
+    if (option.value === "popup") {
+      setShowPopup(true);
+      setTimeout(() => setShowPopup(false), 2000);
+      return;
+    }
+    // Modal
+    if (option.value === "modal") {
+      setShowAlert("modal");
+      return;
+    }
   }
 
   function handleBlur() {
@@ -52,46 +80,6 @@ export default function AlertsPractice() {
   }
 
   function renderAlert() {
-    if (!showAlert) return null;
-    if (showAlert === "alert1")
-      return (
-        <div className="popup">
-          <div className="popup-content">
-            <b>Alert Type 1:</b> This is a simple alert. 🚨
-            <br />
-            <button className="popup-close" onClick={() => setShowAlert(null)}>Close</button>
-          </div>
-        </div>
-      );
-    if (showAlert === "alert2")
-      return (
-        <div className="popup">
-          <div className="popup-content">
-            <b>Alert Type 2:</b> Warning! Something needs your attention. ⚠️
-            <br />
-            <button className="popup-close" onClick={() => setShowAlert(null)}>Close</button>
-          </div>
-        </div>
-      );
-    if (showAlert === "alert3")
-      return (
-        <div className="popup">
-          <div className="popup-content">
-            <b>Alert Type 3:</b> Success! Everything went well. ✅
-            <br />
-            <button className="popup-close" onClick={() => setShowAlert(null)}>Close</button>
-          </div>
-        </div>
-      );
-    if (showAlert === "popup")
-      return (
-        <div className="popup">
-          <div className="popup-content">
-            <b>Popup:</b> This is a popup message. Click outside to close.<br />
-            <button className="popup-close" onClick={() => setShowAlert(null)}>Close</button>
-          </div>
-        </div>
-      );
     if (showAlert === "modal")
       return (
         <div className="modal-overlay" onClick={() => setShowAlert(null)}>
@@ -111,14 +99,14 @@ export default function AlertsPractice() {
       <p className="alerts-description">
         This input has autocomplete functionality.<br />
         Start typing at least <b>2 characters</b> to see suggestions for alert and popup types.<br />
-        For example, type <b>alert</b> to see all alerts, <b>popup</b> or <b>p</b> for popups, or <b>1</b>, <b>2</b>, <b>3</b> for specific alert types.<br />
+        For example, type <b>al</b> to see all alerts, <b>po</b> for popups, <b>mo</b> for modal, or <b>1</b>, <b>2</b>, <b>3</b> for specific alert types.<br />
         Select an option to display the alert or popup. All in English!
       </p>
       <div className="alerts-input-wrapper">
         <input
           type="text"
           className="alerts-input"
-          placeholder="Type alert, popup, 1, 2, 3, modal..."
+          placeholder="Type al, po... for autocomplete"
           value={input}
           onChange={handleInputChange}
           onBlur={handleBlur}
@@ -137,7 +125,20 @@ export default function AlertsPractice() {
           </ul>
         )}
       </div>
-      {/* Render alert or popup as overlay, outside the input/dropdown area */}
+      {/* Bubble alert */}
+      {bubble && (
+        <div className={`bubble-alert bubble-${bubble.type}`}>
+          {bubble.msg}
+        </div>
+      )}
+      {/* Popup animado */}
+      {showPopup && (
+        <div className="popup-animated">
+          <div className="popup-animated-content">
+            <b>Popup:</b> This is a quick popup! 🎈
+          </div>
+        </div>
+      )}
       {renderAlert()}
     </div>
   );

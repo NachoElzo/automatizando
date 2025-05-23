@@ -18,6 +18,7 @@ const sections = [
             { name: "Download & upload", link: "/download-upload" },
             { name: "Alerts", link: "/alerts" },
             { name: "API's", link: "/apis-page" },
+            { name: "Media", link: "/media" },
         ],
     },
 ];
