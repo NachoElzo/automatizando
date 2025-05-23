@@ -26,6 +26,8 @@ function WelcomeContent() {
   const [loading, setLoading] = useState(false);
   const [greeting, setGreeting] = useState("Have a happy testing");
   const [customGreeting, setCustomGreeting] = useState("");
+  const [captcha1Placeholder, setCaptcha1Placeholder] = useState("Mock new username");
+  const [captcha2Placeholder, setCaptcha2Placeholder] = useState("Enter your greeting");
 
   const handleMockName = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,7 +47,7 @@ function WelcomeContent() {
   };
 
   return (
-    <div className="welcome-container welcome-taller">
+    <div className="welcome-container">
       <div className="welcome-title">Welcome, {username}!</div>
       <AutomationRobot />
       <div className="welcome-message">
@@ -54,8 +56,10 @@ function WelcomeContent() {
       <form onSubmit={handleMockName} style={{ marginTop: "1.2rem" }}>
         <input
           type="text"
-          placeholder="Mock new username"
+          placeholder={captcha1Placeholder}
           value={newName}
+          onFocus={() => setCaptcha1Placeholder("")}
+          onBlur={() => !newName && setCaptcha1Placeholder("Mock new username")}
           onChange={e => setNewName(e.target.value)}
           maxLength={30}
           className="api-input"
@@ -72,8 +76,10 @@ function WelcomeContent() {
       <form onSubmit={handleGreeting} style={{ marginTop: "1.2rem" }}>
         <input
           type="text"
-          placeholder="Enter your greeting"
+          placeholder={captcha2Placeholder}
           value={customGreeting}
+          onFocus={() => setCaptcha2Placeholder("")}
+          onBlur={() => !customGreeting && setCaptcha2Placeholder("Enter your greeting")}
           onChange={e => setCustomGreeting(e.target.value)}
           maxLength={30}
           className="api-input"
