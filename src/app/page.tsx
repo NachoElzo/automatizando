@@ -1,4 +1,4 @@
-"use client"; // Mark this file as a client component
+"use client";
 
 import React, { useState } from "react";
 import Link from "next/link";
@@ -24,7 +24,6 @@ const sections = [
 
 export default function Home() {
     const [showLoginPopup, setShowLoginPopup] = useState(false);
-    const [showWelcomePopup, setShowWelcomePopup] = useState(false);
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
@@ -35,9 +34,142 @@ export default function Home() {
 
     const handleLoginSubmit = () => {
         if (username === "admin" && password === "admin") {
+            // Open a new window with 30% of the screen width and height
+            const width = Math.floor(window.screen.width * 0.3);
+            const height = Math.floor(window.screen.height * 0.6);
+            const left = Math.floor((window.screen.width - width) / 2);
+            const top = Math.floor((window.screen.height - height) / 2);
+            const win = window.open(
+                "",
+                "_blank",
+                `width=${width},height=${height},left=${left},top=${top},resizable,scrollbars`
+            );
+            if (win) {
+                win.document.write(`
+                    <html>
+                    <head>
+                        <title>Welcome Admin</title>
+                        <style>
+                            body {
+                                background: #f0fdf4;
+                                font-family: Arial, sans-serif;
+                                display: flex;
+                                flex-direction: column;
+                                align-items: center;
+                                justify-content: center;
+                                height: 100vh;
+                                margin: 0;
+                            }
+                            .robot {
+                                margin: 2rem 0;
+                                display: flex;
+                                flex-direction: column;
+                                align-items: center;
+                            }
+                            .robot-face {
+                                width: 90px;
+                                height: 90px;
+                                background: #22c55e;
+                                border-radius: 50%;
+                                position: relative;
+                                box-shadow: 0 4px 16px #0002;
+                            }
+                            .robot-eye {
+                                position: absolute;
+                                top: 35px;
+                                width: 15px;
+                                height: 15px;
+                                background: #fff;
+                                border-radius: 50%;
+                                border: 2px solid #2563eb;
+                            }
+                            .robot-eye.left { left: 22px; }
+                            .robot-eye.right { right: 22px; }
+                            .robot-pupil {
+                                width: 7px;
+                                height: 7px;
+                                background: #2563eb;
+                                border-radius: 50%;
+                                margin: 4px auto;
+                                transition: height 0.2s;
+                            }
+                            .robot-antenna {
+                                position: absolute;
+                                top: -18px;
+                                left: 50%;
+                                transform: translateX(-50%);
+                                width: 6px;
+                                height: 20px;
+                                background: #2563eb;
+                                border-radius: 3px;
+                            }
+                            .robot-antenna-ball {
+                                position: absolute;
+                                top: -25px;
+                                left: 50%;
+                                transform: translateX(-50%);
+                                width: 14px;
+                                height: 14px;
+                                background: #fff;
+                                border: 2px solid #2563eb;
+                                border-radius: 50%;
+                            }
+                            .robot-mouth {
+                                position: absolute;
+                                bottom: 18px;
+                                left: 50%;
+                                transform: translateX(-50%);
+                                width: 30px;
+                                height: 8px;
+                                border-radius: 0 0 20px 20px;
+                                background: #fff;
+                                border: 2px solid #2563eb;
+                                border-top: none;
+                            }
+                            .welcome-title {
+                                color: #2563eb;
+                                margin-bottom: 1.5rem;
+                                text-align: center;
+                                font-size: 2rem;
+                            }
+                            .welcome-msg {
+                                color: #15803d;
+                                font-size: 1.15rem;
+                                text-align: center;
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="robot">
+                            <div class="robot-face">
+                                <div class="robot-eye left"><div class="robot-pupil"></div></div>
+                                <div class="robot-eye right"><div class="robot-pupil"></div></div>
+                                <div class="robot-antenna"></div>
+                                <div class="robot-antenna-ball"></div>
+                                <div class="robot-mouth"></div>
+                            </div>
+                            <div style="font-size:2.5rem;margin-top:1rem;">🤖</div>
+                        </div>
+                        <h2 class="welcome-title">Welcome user <span style="color:#22c55e;">admin</span>!</h2>
+                        <p class="welcome-msg">
+                            You have successfully logged in as an automation admin.<br>
+                            Enjoy your automation playground!
+                        </p>
+                        <script>
+                            // Simple eye blink animation
+                            setInterval(() => {
+                                document.querySelectorAll('.robot-pupil').forEach(p => {
+                                    p.style.height = p.style.height === '2px' ? '7px' : '2px';
+                                });
+                            }, 700);
+                        </script>
+                    </body>
+                    </html>
+                `);
+                win.document.close();
+            }
             setShowLoginPopup(false);
-            setShowWelcomePopup(true);
-            setError(""); // Limpia el mensaje de error
+            setError("");
         } else {
             setError("User is not active");
         }
@@ -45,7 +177,6 @@ export default function Home() {
 
     const handleClosePopup = () => {
         setShowLoginPopup(false);
-        setShowWelcomePopup(false);
         setUsername("");
         setPassword("");
         setError("");
@@ -59,7 +190,6 @@ export default function Home() {
             <header className="header">
                 <h1 className="title">Automation Practice Hub</h1>
                 <p className="subtitle">Explore different automation tools and techniques</p>
-
             </header>
 
             <main className="grid-container">
@@ -103,19 +233,6 @@ export default function Home() {
                         <button className="popup-button" onClick={handleLoginSubmit}>
                             Submit
                         </button>
-                        <button className="popup-button" onClick={handleClosePopup}>
-                            Close
-                        </button>
-                    </div>
-                </div>
-            )}
-
-            {/* Welcome Popup */}
-            {showWelcomePopup && (
-                <div className="popup">
-                    <div className="popup-content">
-                        <h2 className="popup-title">Welcome</h2>
-                        <p className="popup-message">Welcome, user: Admin</p>
                         <button className="popup-button" onClick={handleClosePopup}>
                             Close
                         </button>

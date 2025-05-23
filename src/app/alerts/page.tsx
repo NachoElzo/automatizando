@@ -36,7 +36,8 @@ export default function AlertsPractice() {
   function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
     const val = e.target.value;
     setInput(val);
-    setShowDropdown(getFilteredOptions(val).length > 0);
+    // Only show dropdown if input has at least 2 characters and there are options
+    setShowDropdown(val.length >= 2 && getFilteredOptions(val).length > 0);
     setShowAlert(null);
   }
 
@@ -108,7 +109,8 @@ export default function AlertsPractice() {
     <div className="alerts-container">
       <h1 className="alerts-title">Alerts & Popups Practice</h1>
       <p className="alerts-description">
-        Type in the box below to filter alert and popup types.<br />
+        This input has autocomplete functionality.<br />
+        Start typing at least <b>2 characters</b> to see suggestions for alert and popup types.<br />
         For example, type <b>alert</b> to see all alerts, <b>popup</b> or <b>p</b> for popups, or <b>1</b>, <b>2</b>, <b>3</b> for specific alert types.<br />
         Select an option to display the alert or popup. All in English!
       </p>
@@ -119,7 +121,6 @@ export default function AlertsPractice() {
           placeholder="Type alert, popup, 1, 2, 3, modal..."
           value={input}
           onChange={handleInputChange}
-          onFocus={() => setShowDropdown(filteredOptions.length > 0)}
           onBlur={handleBlur}
         />
         {showDropdown && (
