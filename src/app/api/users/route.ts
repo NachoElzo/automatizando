@@ -1,9 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 // Simple in-memory store (resets on server restart)
-let users: { id: number; name: string; token?: string }[] = [
-  { id: 1, name: "Jane Doe", token: "admin" },
-];
+let users: { id: number; name: string; password: string; token: string }[] = [];
 const lastRequest: { [ip: string]: number } = {};
 
 function getIP(req: NextRequest) {
@@ -21,9 +19,8 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Too many requests" }, { status: 429 });
   }
   lastRequest[ip] = Date.now();
-  // Do not expose tokens in GET
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  return NextResponse.json(users.map(({ token, ...u }) => u));
+  // Expose all fields for demo
+  return NextResponse.json(users);
 }
 
 export async function POST(req: NextRequest) {
@@ -32,12 +29,11 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Too many requests" }, { status: 429 });
   }
   lastRequest[ip] = Date.now();
-  const { name } = await req.json();
+  const { name, password } = await req.json();
   const token = generateToken();
-  const user = { id: Math.floor(Math.random() * 10000), name, token };
+  const user = { id: Math.floor(Math.random() * 10000), name, password, token };
   users.push(user);
-  // Return token only on creation
-  return NextResponse.json({ user: { id: user.id, name: user.name }, token });
+  return NextResponse.json({ user, token });
 }
 
 function getUserByIdAndToken(id: number, token: string | null) {
@@ -61,7 +57,12 @@ export async function PUT(req: NextRequest) {
       { status: 401 }
     );
   user.name = name;
-  return NextResponse.json({ id: user.id, name: user.name });
+  return NextResponse.json({
+    id: user.id,
+    name: user.name,
+    password: user.password,
+    token: user.token,
+  });
 }
 
 export async function PATCH(req: NextRequest) {
@@ -81,7 +82,12 @@ export async function PATCH(req: NextRequest) {
       { status: 401 }
     );
   user.name = name;
-  return NextResponse.json({ id: user.id, name: user.name });
+  return NextResponse.json({
+    id: user.id,
+    name: user.name,
+    password: user.password,
+    token: user.token,
+  });
 }
 
 export async function DELETE(req: NextRequest) {
@@ -103,3 +109,19 @@ export async function DELETE(req: NextRequest) {
   users = users.filter((u, i) => i !== idx);
   return NextResponse.json({ success: true, id });
 }
+
+// Endpoint para borrar todos los usuarios
+export async function DELETE_ALL() {
+  users = [];
+  return NextResponse.json({ success: true });
+}
+
+// Next.js route handler para DELETE /api/users/all
+export const dynamic = "force-dynamic";
+export const handlers = [
+  {
+    method: "DELETE",
+    path: "/api/users/all",
+    handler: DELETE_ALL,
+  },
+];

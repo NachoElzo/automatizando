@@ -12,24 +12,13 @@ export default function ApiPracticePage() {
 
   const [newName, setNewName] = useState("");
   const [newPassword, setNewPassword] = useState("");
-  const [created, setCreated] = useState<{ id: number; name: string } | null>(null);
-  const [createdToken, setCreatedToken] = useState<string | null>(null);
-  const [createdPassword, setCreatedPassword] = useState<string | null>(null);
-
-  const [updated, setUpdated] = useState<{ id: number; name: string } | null>(null);
-  const [patched, setPatched] = useState<{ id: number; name: string } | null>(null);
-  const [deleted, setDeleted] = useState<{ success: boolean; id: number } | null>(null);
+  const [lastResult, setLastResult] = useState<React.ReactNode>(null);
 
   const [updateName, setUpdateName] = useState("");
   const [updateId, setUpdateId] = useState("");
-  const [updateError, setUpdateError] = useState("");
-
   const [patchName, setPatchName] = useState("");
   const [patchId, setPatchId] = useState("");
-  const [patchError, setPatchError] = useState("");
-
   const [deleteId, setDeleteId] = useState("");
-  const [deleteError, setDeleteError] = useState("");
 
   const [userToken, setUserToken] = useState("");
   const [userPassword, setUserPassword] = useState("");
@@ -45,18 +34,19 @@ export default function ApiPracticePage() {
     name: string;
     password?: string;
     token?: string;
+    [key: string]: string | number | undefined;
   };
   const [userList, setUserList] = useState<User[]>([]);
   const [showUserList, setShowUserList] = useState(false);
   const [emptyList, setEmptyList] = useState(false);
+  const [columns, setColumns] = useState(["id", "name", "password", "token"]);
+
+  // Helper para mantener máximo 20 usuarios
 
   // GET
   const handleGetUser = async () => {
     setLoadingGet(true);
-    setShowUserList(false);
-    setCreated(null);
-    setCreatedToken(null);
-    setCreatedPassword(null);
+    setLastResult(null);
     setEmptyList(false);
     try {
       const res = await fetch("/api/users");
@@ -66,14 +56,23 @@ export default function ApiPracticePage() {
         setUserList([]);
         setShowUserList(false);
         setEmptyList(true);
+        setLastResult(null);
       } else {
         setUserList(data);
         setShowUserList(true);
+        setEmptyList(false);
+        setLastResult(null);
+        // Detecta columnas disponibles
+        if (data.length > 0) {
+          const keys = Object.keys(data[0]);
+          setColumns(["id", "name", ...(keys.includes("password") ? ["password"] : []), ...(keys.includes("token") ? ["token"] : [])]);
+        }
       }
     } catch {
       setUserList([]);
       setShowUserList(false);
       setEmptyList(true);
+      setLastResult(null);
     }
     setLoadingGet(false);
   };
@@ -81,12 +80,9 @@ export default function ApiPracticePage() {
   // POST
   const handleCreateUser = async () => {
     if (!newName || !newPassword) return;
-    setShowUserList(false);
-    setLoadingPost(true);
-    setCreated(null);
-    setCreatedToken(null);
-    setCreatedPassword(null);
+    setLastResult(null);
     try {
+      setLoadingPost(true);
       const res = await fetch("/api/users", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -94,12 +90,21 @@ export default function ApiPracticePage() {
       });
       const data = await res.json();
       if (res.status === 429) {
-        setCreated(null);
         alert("Too many requests. Please wait a moment.");
       } else {
-        setCreated(data.user);
-        setCreatedToken(data.token);
-        setCreatedPassword(newPassword);
+        setLastResult(
+          <div className="user-credentials-label">
+            <span>
+              <b>User:</b> {data.user.name} (ID: {data.user.id})
+            </span>
+            <span style={{ marginLeft: "1.5rem" }}>
+              <b>password:</b> {data.user.password}
+            </span>
+            <span style={{ marginLeft: "1.5rem" }}>
+              <b>token:</b> {data.user.token}
+            </span>
+          </div>
+        );
       }
     } finally {
       setLoadingPost(false);
@@ -110,11 +115,7 @@ export default function ApiPracticePage() {
 
   // PUT
   const handleUpdateUser = async () => {
-    setShowUserList(false);
-    setCreated(null);
-    setCreatedToken(null);
-    setCreatedPassword(null);
-    setUpdateError("");
+    setLastResult(null);
     setTokenErrorPut("");
     setPasswordErrorPut("");
     const id = Number(updateId);
@@ -129,7 +130,6 @@ export default function ApiPracticePage() {
     if (!id) return;
     if (!updateName) return;
     setLoadingPut(true);
-    setUpdated(null);
     try {
       const res = await fetch("/api/users", {
         method: "PUT",
@@ -144,10 +144,21 @@ export default function ApiPracticePage() {
       if (res.status === 401) {
         if (data.error?.toLowerCase().includes("password")) setPasswordErrorPut("Invalid or missing password.");
         else setTokenErrorPut("Invalid or missing token.");
+        setLastResult(null);
       }
-      else if (res.status === 404) setUpdateError("The user ID does not exist.");
+      else if (res.status === 404) {
+        setLastResult(<div className="api-error">The user ID does not exist.</div>);
+      }
       else if (res.status === 429) alert("Too many requests. Please wait a moment.");
-      else setUpdated(data);
+      else {
+        setLastResult(
+          <div className="api-result updated">
+            <b>Updated:</b> {data.name} (ID: {data.id})
+          </div>
+        );
+        setUserList(prev => prev.map(u => u.id === data.id ? { ...u, name: data.name } : u));
+        setShowUserList(true);
+      }
     } finally {
       setLoadingPut(false);
       setUpdateName("");
@@ -157,11 +168,7 @@ export default function ApiPracticePage() {
 
   // PATCH
   const handlePatchUser = async () => {
-    setShowUserList(false);
-    setCreated(null);
-    setCreatedToken(null);
-    setCreatedPassword(null);
-    setPatchError("");
+    setLastResult(null);
     setTokenErrorPatch("");
     setPasswordErrorPatch("");
     const id = Number(patchId);
@@ -176,7 +183,6 @@ export default function ApiPracticePage() {
     if (!id) return;
     if (!patchName) return;
     setLoadingPatch(true);
-    setPatched(null);
     try {
       const res = await fetch("/api/users", {
         method: "PATCH",
@@ -191,10 +197,21 @@ export default function ApiPracticePage() {
       if (res.status === 401) {
         if (data.error?.toLowerCase().includes("password")) setPasswordErrorPatch("Invalid or missing password.");
         else setTokenErrorPatch("Invalid or missing token.");
+        setLastResult(null);
       }
-      else if (res.status === 404) setPatchError("The user ID does not exist.");
+      else if (res.status === 404) {
+        setLastResult(<div className="api-error">The user ID does not exist.</div>);
+      }
       else if (res.status === 429) alert("Too many requests. Please wait a moment.");
-      else setPatched(data);
+      else {
+        setLastResult(
+          <div className="api-result patched">
+            <b>Patched:</b> {data.name} (ID: {data.id})
+          </div>
+        );
+        setUserList(prev => prev.map(u => u.id === data.id ? { ...u, name: data.name } : u));
+        setShowUserList(true);
+      }
     } finally {
       setLoadingPatch(false);
       setPatchName("");
@@ -204,11 +221,7 @@ export default function ApiPracticePage() {
 
   // DELETE
   const handleDeleteUser = async () => {
-    setShowUserList(false);
-    setCreated(null);
-    setCreatedToken(null);
-    setCreatedPassword(null);
-    setDeleteError("");
+    setLastResult(null);
     setTokenErrorDelete("");
     setPasswordErrorDelete("");
     const id = Number(deleteId);
@@ -222,7 +235,6 @@ export default function ApiPracticePage() {
     }
     if (!id) return;
     setLoadingDelete(true);
-    setDeleted(null);
     try {
       const res = await fetch("/api/users", {
         method: "DELETE",
@@ -237,10 +249,21 @@ export default function ApiPracticePage() {
       if (res.status === 401) {
         if (data.error?.toLowerCase().includes("password")) setPasswordErrorDelete("Invalid or missing password.");
         else setTokenErrorDelete("Invalid or missing token.");
+        setLastResult(null);
       }
-      else if (res.status === 404) setDeleteError("The user ID does not exist.");
+      else if (res.status === 404) {
+        setLastResult(<div className="api-error">The user ID does not exist.</div>);
+      }
       else if (res.status === 429) alert("Too many requests. Please wait a moment.");
-      else setDeleted(data);
+      else {
+        setLastResult(
+          <div className="api-result deleted">
+            <b>Deleted user with ID:</b> {data.id}
+          </div>
+        );
+        setUserList(prev => prev.filter(u => u.id !== data.id));
+        setShowUserList(true);
+      }
     } finally {
       setLoadingDelete(false);
       setDeleteId("");
@@ -248,15 +271,11 @@ export default function ApiPracticePage() {
   };
 
   // CLEAR
-  const handleClear = () => {
+  const handleClear = async () => {
+    await fetch("/api/users/all", { method: "DELETE" });
     setUserList([]);
     setShowUserList(false);
-    setCreated(null);
-    setCreatedToken(null);
-    setCreatedPassword(null);
-    setUpdated(null);
-    setPatched(null);
-    setDeleted(null);
+    setLastResult(null);
     setUpdateId("");
     setUpdateName("");
     setPatchId("");
@@ -264,9 +283,6 @@ export default function ApiPracticePage() {
     setDeleteId("");
     setUserToken("");
     setUserPassword("");
-    setUpdateError("");
-    setPatchError("");
-    setDeleteError("");
     setTokenErrorPut("");
     setTokenErrorPatch("");
     setTokenErrorDelete("");
@@ -297,26 +313,24 @@ export default function ApiPracticePage() {
       </div>
       {/* User list grid */}
       {emptyList && (
-        <div className="api-error" style={{ textAlign: "center" }}>EMPTY LIST</div>
+        <div className="api-error" style={{ textAlign: "center" }}>USER TABLE IS EMPTY</div>
       )}
-      {showUserList && (
+      {showUserList && userList.length > 0 && (
         <div className="api-user-list-grid">
           <table>
             <thead>
               <tr>
-                <th>User ID</th>
-                <th>User Name</th>
-                <th>Password</th>
-                <th>Token</th>
+                {columns.map(col => (
+                  <th key={col}>{col === "id" ? "User ID" : col === "name" ? "User Name" : col.charAt(0).toUpperCase() + col.slice(1)}</th>
+                ))}
               </tr>
             </thead>
             <tbody>
               {userList.map(u => (
                 <tr key={u.id}>
-                  <td>{u.id}</td>
-                  <td>{u.name}</td>
-                  <td>{u.password}</td>
-                  <td>{u.token}</td>
+                  {columns.map(col => (
+                    <td key={col}>{u[col]}</td>
+                  ))}
                 </tr>
               ))}
             </tbody>
@@ -341,30 +355,11 @@ export default function ApiPracticePage() {
         <button onClick={handleCreateUser} disabled={loadingPost || !newName || !newPassword} className="api-btn post">
           {loadingPost ? "Loading..." : "POST User"}
         </button>
-        {(created || createdToken || createdPassword) && (
-          <div className="user-credentials-label">
-            {created && (
-              <span>
-                <b>User:</b> {created.name} (ID: {created.id})
-              </span>
-            )}
-            {createdToken && (
-              <span style={{ marginLeft: "1.5rem" }}>
-                <b>token:</b> {createdToken}
-              </span>
-            )}
-            {createdPassword && (
-              <span style={{ marginLeft: "1.5rem" }}>
-                <b>password:</b> {createdPassword}
-              </span>
-            )}
-          </div>
-        )}
       </div>
       {/* TOKEN & PASSWORD INPUT FOR PUT/PATCH/DELETE */}
       <div className="api-section" style={{ flexDirection: "column", alignItems: "flex-start" }}>
         <label className="api-helper-label-red">
-          You must provide the user token to perform PUT, PATCH, or DELETE requests:
+          You must provide the user token and password to perform PUT, PATCH, or DELETE requests:
         </label>
         <input
           type="text"
@@ -374,9 +369,6 @@ export default function ApiPracticePage() {
           className="api-input"
           style={{ marginBottom: 8, width: 320, maxWidth: "100%" }}
         />
-        <label className="api-helper-label-red">
-          You must provide the user password to perform PUT, PATCH, or DELETE requests:
-        </label>
         <input
           type="text"
           placeholder="User password"
@@ -386,7 +378,9 @@ export default function ApiPracticePage() {
           style={{ marginBottom: 8, width: 320, maxWidth: "100%" }}
         />
       </div>
-      {/* PUT section */}
+      {/* ÚLTIMO LABEL DE RESULTADO */}
+      {lastResult}
+      {/* PUT */}
       <div className="api-section">
         <input
           type="number"
@@ -407,26 +401,10 @@ export default function ApiPracticePage() {
         <button onClick={handleUpdateUser} disabled={loadingPut || !updateName || !updateId} className="api-btn put">
           {loadingPut ? "Loading..." : "PUT User"}
         </button>
-        {tokenErrorPut && (
-          <div className="api-error">{tokenErrorPut}</div>
-        )}
-        {passwordErrorPut && (
-          <div className="api-error">{passwordErrorPut}</div>
-        )}
-        {updateError && (
-          <>
-            <div className="api-error">{updateError}</div>
-            <div className="api-error">You must provide the user token.</div>
-            <div className="api-error">You must provide the user password.</div>
-          </>
-        )}
-        {updated && (
-          <div className="api-result updated">
-            <b>Updated:</b> {updated.name} (ID: {updated.id})
-          </div>
-        )}
+        {tokenErrorPut && <div className="api-error">{tokenErrorPut}</div>}
+        {passwordErrorPut && <div className="api-error">{passwordErrorPut}</div>}
       </div>
-      {/* PATCH section */}
+      {/* PATCH */}
       <div className="api-section">
         <input
           type="number"
@@ -447,26 +425,10 @@ export default function ApiPracticePage() {
         <button onClick={handlePatchUser} disabled={loadingPatch || !patchName || !patchId} className="api-btn patch">
           {loadingPatch ? "Loading..." : "PATCH User"}
         </button>
-        {tokenErrorPatch && (
-          <div className="api-error">{tokenErrorPatch}</div>
-        )}
-        {passwordErrorPatch && (
-          <div className="api-error">{passwordErrorPatch}</div>
-        )}
-        {patchError && (
-          <>
-            <div className="api-error">{patchError}</div>
-            <div className="api-error">You must provide the user token.</div>
-            <div className="api-error">You must provide the user password.</div>
-          </>
-        )}
-        {patched && (
-          <div className="api-result patched">
-            <b>Patched:</b> {patched.name} (ID: {patched.id})
-          </div>
-        )}
+        {tokenErrorPatch && <div className="api-error">{tokenErrorPatch}</div>}
+        {passwordErrorPatch && <div className="api-error">{passwordErrorPatch}</div>}
       </div>
-      {/* DELETE section */}
+      {/* DELETE */}
       <div className="api-section">
         <input
           type="number"
@@ -480,30 +442,8 @@ export default function ApiPracticePage() {
         <button onClick={handleDeleteUser} disabled={loadingDelete || !deleteId} className="api-btn delete">
           {loadingDelete ? "Loading..." : "DELETE User"}
         </button>
-        {tokenErrorDelete && (
-          <div className="api-error">{tokenErrorDelete}</div>
-        )}
-        {passwordErrorDelete && (
-          <div className="api-error">{passwordErrorDelete}</div>
-        )}
-        {deleteError && (
-          <>
-            <div className="api-error">{deleteError}</div>
-            <div className="api-error">You must provide the user token.</div>
-            <div className="api-error">You must provide the user password.</div>
-          </>
-        )}
-        {deleted && (
-          <div className={`api-result ${deleted.success ? "deleted" : "error"}`}>
-            {deleted.success ? (
-              <span>
-                <b>Deleted user with ID:</b> {deleted.id}
-              </span>
-            ) : (
-              <span>Delete failed</span>
-            )}
-          </div>
-        )}
+        {tokenErrorDelete && <div className="api-error">{tokenErrorDelete}</div>}
+        {passwordErrorDelete && <div className="api-error">{passwordErrorDelete}</div>}
       </div>
     </div>
   );
