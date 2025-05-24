@@ -20,6 +20,7 @@ const sections = [
             { name: "API's", link: "/apis-page" },
             { name: "Media", link: "/media" },
             { name: "Scrapy", link: "/scrapy" },
+            { name: "Radio buttons", link: "/radio-buttons" },
         ],
     },
 ];

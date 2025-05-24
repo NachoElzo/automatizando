@@ -1,0 +1,412 @@
+body {
+  background: #f5f6fa;
+}
+
+.automation-app-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background: #f5f6fa;
+  min-height: 100vh;
+}
+
+.automation-title-wrapper {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.automation-title {
+  text-align: center;
+  color: #139607;
+  font-size: 2.1rem;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  font-weight: 900;
+  letter-spacing: 2px;
+  margin-bottom: 1.2rem;
+  margin-top: 30px !important;
+  text-shadow: 0 2px 16px #0001;
+  width: 100%;
+  margin-left: 30%;
+}
+
+.automation-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 0.5rem; /* Reduced gap for less margin right */
+  margin-bottom: 2rem;
+}
+
+.automation-results-top {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  min-width: 180px;
+  margin-right: 0.5rem; /* Less margin right on desktop */
+}
+
+.pie-chart {
+  margin: 0 0 0.5rem 0;
+  display: block;
+  background: transparent;
+  width: 140px;
+  height: 140px;
+}
+
+.automation-score-top {
+  text-align: right;
+  font-size: 1.25rem;
+  color: #1976d2; /* blue color for score label */
+  margin-top: 0.2rem;
+  font-weight: 600;
+}
+
+.automation-pass {
+  color: #43a047;
+  font-weight: bold;
+  font-size: 1.1em;
+}
+.automation-fail {
+  color: #e53935;
+  font-weight: bold;
+  font-size: 1.1em;
+}
+
+.automation-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.automation-tab-btn {
+  background: #e0e0e0;
+  border: none;
+  border-radius: 18px;
+  padding: 0.6rem 1.5rem;
+  font-size: 1.08rem;
+  font-weight: 700;
+  color: #333;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, transform 0.1s;
+  box-shadow: 0 2px 8px #0002;
+  letter-spacing: 1px;
+}
+.automation-tab-btn.active {
+  background: #4caf50;
+  color: #fff;
+  transform: scale(1.08);
+  box-shadow: 0 4px 18px #4caf5040;
+}
+.automation-tab-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.automation-quiz-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.automation-question-card {
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 2px 12px #0001;
+  width: 100%;
+  max-width: 500px;
+  padding: 1rem 1.2rem 1.2rem 1.2rem;
+  margin-bottom: 0.5rem;
+}
+
+.automation-question {
+  font-size: 1.08rem;
+  font-weight: 600;
+  color: #222;
+  margin-bottom: 0.7rem;
+}
+
+.automation-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.automation-radio-label {
+  color: #444;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
+.automation-radio-label input[type="radio"] {
+  accent-color: #4caf50;
+  width: 1.1em;
+  height: 1.1em;
+}
+
+.automation-send-btn {
+  margin: 1.5rem auto 0 auto;
+  display: block;
+  background: #4caf50;
+  color: #fff;
+  border: none;
+  border-radius: 16px;
+  padding: 0.7rem 2.2rem;
+  font-size: 1.15rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 2px 8px #4caf5040;
+  transition: background 0.2s, transform 0.1s;
+}
+.automation-send-btn.disabled,
+.automation-send-btn:disabled {
+  background: #bdbdbd;
+  color: #888;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+.automation-send-btn:hover:not(.disabled):not(:disabled) {
+  background: #388e3c;
+  transform: scale(1.04);
+}
+
+.automation-scroll-top {
+  margin: 1.5rem auto 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  color: #4caf50;
+  font-weight: 600;
+  font-size: 1.1rem;
+  transition: color 0.2s;
+  gap: 0.2rem;
+}
+.automation-scroll-top:hover {
+  color: #388e3c;
+}
+.automation-arrow {
+  font-size: 2.2rem;
+  line-height: 1;
+  margin-bottom: 0.1rem;
+}
+.automation-scroll-label {
+  font-size: 1rem;
+  letter-spacing: 0.5px;
+}
+
+.automation-retest-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.2rem;
+  margin-top: 0;
+}
+
+.automation-retest-btn {
+  background: #4caf50;
+  color: #fff;
+  border: none;
+  border-radius: 18px;
+  padding: 0.7rem 2.2rem;
+  font-size: 1.12rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 2px 8px #4caf5040;
+  transition: background 0.2s, transform 0.1s;
+  margin-top: 0;
+  margin-left: 30%;
+  display: block;
+}
+
+.automation-retest-btn.disabled,
+.automation-retest-btn:disabled {
+  background: #bdbdbd;
+  color: #888;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.automation-retest-btn:hover:not(.disabled):not(:disabled) {
+  background: #388e3c;
+  transform: scale(1.04);
+}
+
+
+@media (max-width: 900px) {
+  .automation-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+  .automation-results-top {
+    align-items: flex-start;
+    text-align: left;
+    margin-bottom: 1rem;
+    margin-right: 0;
+  }
+  .automation-score-top {
+    text-align: left;
+  }
+  .pie-chart {
+    margin: 0 auto 0.5rem auto;
+    width: 110px;
+    height: 110px;
+  }
+  .automation-title-wrapper {
+    justify-content: center;
+  }
+  .automation-title {
+    margin-left: 0 !important;
+    text-align: center;
+    width: 100%;
+  }
+  .automation-retest-btn {
+    font-size: 1rem;
+    padding: 0.6rem 1.5rem;
+    margin-left: 0;         /* <-- Remove left margin */
+    display: block;
+    margin-right: 0;        /* <-- Ensure no right margin */
+    margin: 0 auto;   
+    
+  }
+}
+
+@media (max-width: 900px) {
+  .automation-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+  .automation-results-top {
+    align-items: center;
+    text-align: center;
+    margin-bottom: 1rem;
+    margin-right: 0;
+  }
+  .automation-score-top {
+    text-align: center;
+  }
+  .pie-chart {
+    margin: 0 auto 0.5rem auto;
+    width: 110px;
+    height: 110px;
+  }
+  .automation-title-wrapper {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 600px) {
+  .automation-app-container {
+    padding: 1rem 0.2rem;
+    min-width: 0;
+    width: 100vw;
+    box-sizing: border-box;
+  }
+  .automation-title {
+    font-size: 1.1rem;
+    margin-bottom: 0.7rem;
+    margin-top: 30px !important;
+    margin-left: 0 !important;
+    word-break: break-word;
+    padding: 0 2vw;
+  }
+  .automation-tabs {
+    gap: 0.3rem;
+    margin-bottom: 0.7rem;
+    flex-wrap: wrap;
+  }
+  .automation-tab-btn {
+    padding: 0.3rem 0.6rem;
+    font-size: 0.93rem;
+    border-radius: 10px;
+  }
+  .automation-question-card {
+    max-width: 98vw;
+    padding: 0.5rem 0.2rem 0.8rem 0.2rem;
+    margin-bottom: 0.3rem;
+  }
+  .automation-question {
+    font-size: 0.97rem;
+  }
+  .automation-radio-label {
+    font-size: 0.93rem;
+  }
+  .automation-score {
+    font-size: 0.97rem;
+  }
+  .pie-chart {
+    width: 80vw;
+    max-width: 180px;
+    height: auto;
+    min-width: 90px;
+  }
+  .automation-retest-btn {
+    font-size: 0.93rem;
+    padding: 0.45rem 1.1rem;
+    border-radius: 12px;
+  }
+}
+
+@media (max-width: 400px) {
+  .automation-app-container {
+    padding: 0.5rem 0.05rem;
+    min-width: 0;
+    width: 100vw;
+    box-sizing: border-box;
+  }
+  .automation-title {
+    font-size: 0.95rem;
+    margin-bottom: 0.5rem;
+    margin-top: 18px !important;
+    margin-left: 0 !important;
+    padding: 0 1vw;
+  }
+  .automation-tabs {
+    gap: 0.15rem;
+    margin-bottom: 0.5rem;
+    flex-wrap: wrap;
+  }
+  .automation-tab-btn {
+    padding: 0.18rem 0.35rem;
+    font-size: 0.8rem;
+    border-radius: 7px;
+  }
+  .automation-question-card {
+    max-width: 99vw;
+    padding: 0.3rem 0.05rem 0.5rem 0.05rem;
+    margin-bottom: 0.2rem;
+  }
+  .automation-question {
+    font-size: 0.85rem;
+  }
+  .automation-radio-label {
+    font-size: 0.8rem;
+  }
+  .automation-score {
+    font-size: 0.85rem;
+  }
+  .pie-chart {
+    width: 90vw;
+    max-width: 120px;
+    min-width: 60px;
+    height: auto;
+  }
+  .automation-scroll-label {
+    font-size: 0.85rem;
+  }
+  .automation-arrow {
+    font-size: 1.5rem;
+  }
+}

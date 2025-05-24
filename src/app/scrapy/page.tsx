@@ -336,13 +336,12 @@ export default function MovieScrappingApp() {
         ))}
       </div>
       <div className="scrap-explanation">
-        <h3>¿Cómo practicar scraping?</h3>
+        <h3>How to practice scraping?</h3>
         <ul>
-          <li>Elige una web de películas (ej: IMDb, TMDb, etc.)</li>
-          <li>Usa una librería de scraping (cheerio, BeautifulSoup, etc.) para extraer los datos.</li>
-          <li>Guarda los datos en archivos <b>JSON</b> (como el ejemplo de arriba).</li>
-          <li>Importa esos archivos en tu app y muéstralos en tarjetas como estas.</li>
-          <li>¡Nunca uses scraping para fines comerciales sin permiso!</li>
+          <li>Use a scraping library (cheerio, BeautifulSoup, etc.) to extract the data.</li>
+          <li>Save the data in JSON files (like the example above).</li>
+          <li>Import those files into your app and display them in cards like these.</li>
+          <li>Never use scraping for commercial purposes without permission!</li>
         </ul>
       </div>
     </div>
