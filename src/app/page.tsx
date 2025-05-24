@@ -1,5 +1,7 @@
 "use client";
 
+import "./css/globals.css";
+
 import Link from "next/link";
 
 // Define sections and topics
@@ -21,6 +23,7 @@ const sections = [
             { name: "Media", link: "/media" },
             { name: "Scrapy", link: "/scrapy" },
             { name: "Radio buttons", link: "/radio-buttons" },
+             { name: "Scrolling", link: "/scrolling" },
         ],
     },
 ];
