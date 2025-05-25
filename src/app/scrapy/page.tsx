@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import "../css/scrapy.css";
 
@@ -318,6 +318,14 @@ type MovieCategory = keyof typeof MOVIES;
 type Movie = (typeof MOVIES)[MovieCategory][number];
 
 export default function MovieScrappingApp() {
+  useEffect(() => {
+    const prev = document.body.style.background;
+    document.body.style.background = "#141414";
+    return () => {
+      document.body.style.background = prev;
+    };
+  }, []);
+
   const [tab, setTab] = useState<MovieCategory>("action");
   const [cart, setCart] = useState<Movie[]>([]);
   const [modalMovie, setModalMovie] = useState<Movie | null>(null);
@@ -400,13 +408,15 @@ export default function MovieScrappingApp() {
               <div className="scrap-movie-label"><b>Genre:</b> {movie.genre}</div>
               <div className="scrap-movie-label"><b>Price:</b> ${movie.price}</div>
             </div>
-            <button
-              className="scrap-cart-btn-netflix"
-              onClick={() => handleAddToCart(movie)}
-              disabled={!!cart.find(m => m.title === movie.title)}
-            >
-              {cart.find(m => m.title === movie.title) ? "Added" : "Add to cart"}
-            </button>
+            <div className="scrap-movie-card-btn-wrap">
+              <button
+                className="scrap-cart-btn-netflix"
+                onClick={() => handleAddToCart(movie)}
+                disabled={!!cart.find(m => m.title === movie.title)}
+              >
+                {cart.find(m => m.title === movie.title) ? "Added" : "Add to cart"}
+              </button>
+            </div>
           </div>
         ))}
       </div>

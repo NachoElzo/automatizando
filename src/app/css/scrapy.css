@@ -1,14 +1,11 @@
-body {
-  background: #141414;
-}
-
 .scrap-app-container {
-  max-width: 1200px;
-  margin: 0 auto;
+  width: 100vw;
+  min-height: 100vh;
+  margin: 0;
   padding: 2rem 1rem;
   font-family: 'Segoe UI', Arial, sans-serif;
   background: #141414;
-  min-height: 100vh;
+  box-sizing: border-box;
 }
 
 .scrapflix-title {
@@ -407,6 +404,13 @@ body {
 .scrap-cart-btn-netflix:hover:not(:disabled) {
   background: #b0060f;
   transform: scale(1.04);
+}
+
+.scrap-movie-card-btn-wrap {
+  margin-top: auto;
+  width: 100%;
+  display: flex;
+  justify-content: center;
 }
 
 @media (max-width: 900px) {

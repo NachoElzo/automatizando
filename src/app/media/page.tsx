@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import "../css/media.css";
 
 const PUBLIC_VIDEO =
@@ -125,10 +126,14 @@ export default function MediaPage() {
 
       <div className="media-section">
         <h2 className="media-subtitle">Captcha 2: What animal do you see?</h2>
-        <img
+        <Image
           src={FUNNY_IMAGE}
           alt="Funny animal"
           className="media-funny-img"
+          width={400}
+          height={400}
+          style={{ objectFit: "cover", borderRadius: "1rem" }}
+          priority
         />
         <form onSubmit={handleCaptcha2} className="media-form">
           <input

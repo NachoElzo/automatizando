@@ -1,6 +1,5 @@
 .media-container {
   min-height: 100vh;
-  background: #f0fdf4;
   display: flex;
   flex-direction: column;
   align-items: center;

@@ -1,6 +1,17 @@
 "use client";
 
 import React, { useState } from "react";
+import "../css/inputs-fields.css";
+
+function TooltipCell({ value, isHeader = false }: { value: string; isHeader?: boolean }) {
+  const CellTag = isHeader ? "th" : "td";
+  // El atributo title muestra el tooltip nativo del navegador
+  return (
+    <CellTag title={value}>
+      {value}
+    </CellTag>
+  );
+}
 
 export default function InputsFields() {
   const [formData, setFormData] = useState({
@@ -20,6 +31,7 @@ export default function InputsFields() {
 
   const [gridData, setGridData] = useState([
     {
+      id: 1,
       name: "John",
       lastName: "Doe",
       age: "30",
@@ -29,6 +41,7 @@ export default function InputsFields() {
       city: "New York",
     },
     {
+      id: 2,
       name: "Jane",
       lastName: "Smith",
       age: "25",
@@ -38,6 +51,7 @@ export default function InputsFields() {
       city: "Toronto",
     },
     {
+      id: 3,
       name: "Alice",
       lastName: "Johnson",
       age: "28",
@@ -46,39 +60,19 @@ export default function InputsFields() {
       country: "UK",
       city: "London",
     },
-    {
-      name: "Bob",
-      lastName: "Brown",
-      age: "35",
-      email: "bob.brown@example.com",
-      phone: "4564564567",
-      country: "Australia",
-      city: "Sydney",
-    },
-    {
-      name: "Emily",
-      lastName: "Wilson",
-      age: "22",
-      email: "emily.wilson@example.com",
-      phone: "1112223333",
-      country: "France",
-      city: "Paris",
-    },
-    {
-      name: "Grace",
-      lastName: "Lee",
-      age: "32",
-      email: "grace.lee@example.com",
-      phone: "7778889999",
-      country: "Japan",
-      city: "Tokyo",
-    },
   ]);
+
+  const [deleteError, setDeleteError] = useState("");
+  const [deleteId, setDeleteId] = useState("");
+  const [error, setError] = useState("");
+  const isFormValid =
+    Object.values(formData).every((v) => v.trim() !== "") &&
+    !errors.phone &&
+    !errors.age;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
 
-    // Validar errores en tiempo real
     if (name === "phone") {
       if (!/^\d{0,10}$/.test(value)) {
         setErrors((prevErrors) => ({
@@ -116,13 +110,20 @@ export default function InputsFields() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setError("");
+    if (!isFormValid) return;
 
-    // Validar errores antes de enviar
-    if (errors.phone || errors.age) {
+    if (gridData.length >= 20) {
+      setError("You can only add up to 20 people. Please delete a row before adding another.");
       return;
     }
 
-    setGridData((prevData) => [formData, ...prevData]);
+    // Encuentra el máximo id actual y suma 1
+    const maxId = gridData.length > 0 ? Math.max(...gridData.map(row => row.id)) : 0;
+    setGridData((prevData) => [
+      { id: maxId + 1, ...formData },
+      ...prevData,
+    ]);
     setFormData({
       name: "",
       lastName: "",
@@ -132,8 +133,18 @@ export default function InputsFields() {
       country: "",
       city: "",
     });
+  };
 
-    alert("Data successfully added to the grid!");
+  const handleDeleteById = (e: React.FormEvent) => {
+    e.preventDefault();
+    setDeleteError("");
+    const idNum = Number(deleteId);
+    if (!idNum || !gridData.some((row) => row.id === idNum)) {
+      setDeleteError("ID does not exist.");
+      return;
+    }
+    setGridData((prevData) => prevData.filter((row) => row.id !== idNum));
+    setDeleteId("");
   };
 
   return (
@@ -141,6 +152,8 @@ export default function InputsFields() {
       <h1 className="title text-4xl font-bold text-gray-800 mb-6">Inputs Practice</h1>
       <p className="subtitle text-gray-600 mb-8">
         Fill out the form below and click &quot;Send&quot; to add the data to the grid.
+        <br />
+        <b>All fields must be completed to send the form.</b>
       </p>
 
       <div className="form-container bg-white p-6 rounded-lg shadow-md">
@@ -159,7 +172,6 @@ export default function InputsFields() {
               placeholder="Enter your name"
             />
           </div>
-
           <div>
             <label htmlFor="lastName" className="block text-gray-700 font-medium mb-2">
               Last Name
@@ -174,7 +186,6 @@ export default function InputsFields() {
               placeholder="Enter your last name"
             />
           </div>
-
           <div>
             <label htmlFor="age" className="block text-gray-700 font-medium mb-2">
               Age
@@ -190,7 +201,6 @@ export default function InputsFields() {
             />
             {errors.age && <p className="error-message">{errors.age}</p>}
           </div>
-
           <div>
             <label htmlFor="email" className="block text-gray-700 font-medium mb-2">
               Email
@@ -205,7 +215,6 @@ export default function InputsFields() {
               placeholder="Enter your email"
             />
           </div>
-
           <div>
             <label htmlFor="phone" className="block text-gray-700 font-medium mb-2">
               Phone
@@ -222,7 +231,6 @@ export default function InputsFields() {
             />
             {errors.phone && <p className="error-message">{errors.phone}</p>}
           </div>
-
           <div>
             <label htmlFor="country" className="block text-gray-700 font-medium mb-2">
               Country
@@ -237,7 +245,6 @@ export default function InputsFields() {
               placeholder="Enter your country"
             />
           </div>
-
           <div>
             <label htmlFor="city" className="block text-gray-700 font-medium mb-2">
               City
@@ -252,36 +259,70 @@ export default function InputsFields() {
               placeholder="Enter your city"
             />
           </div>
-
-          <button type="submit" className="submit-button">
+          <button
+            type="submit"
+            className="submit-button"
+            disabled={!isFormValid}
+          >
             Send
           </button>
         </form>
+        {error && (
+          <div style={{ color: "#dc2626", fontWeight: 500, marginTop: "1rem" }}>
+            {error}
+          </div>
+        )}
+        <form onSubmit={handleDeleteById} className="delete-id-form">
+          <label htmlFor="deleteId" className="label">
+            Delete by ID:
+          </label>
+          <input
+            id="deleteId"
+            name="deleteId"
+            className="delete-id-input"
+            value={deleteId}
+            onChange={(e) => setDeleteId(e.target.value)}
+          />
+          <button
+            type="submit"
+            className="submit-button"
+            disabled={!/^\d+$/.test(deleteId) || Number(deleteId) <= 0}
+          >
+            Delete
+          </button>
+        </form>
+        {deleteError && (
+          <div style={{ color: "#dc2626", fontWeight: 500, marginTop: 0 }}>
+            {deleteError}
+          </div>
+        )}
       </div>
 
       <div className="grid-container bg-white p-6 rounded-lg shadow-md mt-8">
         <table className="data-grid">
           <thead>
             <tr>
-              <th>Name</th>
-              <th>Last Name</th>
-              <th>Age</th>
-              <th>Email</th>
-              <th>Phone</th>
-              <th>Country</th>
-              <th>City</th>
+              <TooltipCell value="ID" isHeader />
+              <TooltipCell value="Name" isHeader />
+              <TooltipCell value="Last Name" isHeader />
+              <TooltipCell value="Age" isHeader />
+              <TooltipCell value="Email" isHeader />
+              <TooltipCell value="Phone" isHeader />
+              <TooltipCell value="Country" isHeader />
+              <TooltipCell value="City" isHeader />
             </tr>
           </thead>
           <tbody>
-            {gridData.map((data, index) => (
-              <tr key={index}>
-                <td>{data.name}</td>
-                <td>{data.lastName}</td>
-                <td>{data.age}</td>
-                <td>{data.email}</td>
-                <td>{data.phone}</td>
-                <td>{data.country}</td>
-                <td>{data.city}</td>
+            {gridData.map((row) => (
+              <tr key={row.id}>
+                <TooltipCell value={row.id.toString()} />
+                <TooltipCell value={row.name} />
+                <TooltipCell value={row.lastName} />
+                <TooltipCell value={row.age} />
+                <TooltipCell value={row.email} />
+                <TooltipCell value={row.phone} />
+                <TooltipCell value={row.country} />
+                <TooltipCell value={row.city} />
               </tr>
             ))}
           </tbody>

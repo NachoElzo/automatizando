@@ -1,0 +1,300 @@
+/* Página centrada y fondo suave */
+.inputs-page {
+  background-color: #f7f7f7;
+  padding: 2rem;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Títulos */
+.title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #019337;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.subtitle {
+  font-size: 1.25rem;
+  color: #7f8286;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+/* Contenedores iguales, más anchos y centrados */
+.form-container,
+.grid-container {
+  width: 100%;
+  max-width: 700px; /* MISMO ancho para ambos */
+  margin: 0 auto 2rem auto;
+  padding: 2rem 2rem 2rem 2rem;
+  box-sizing: border-box;
+  background-color: #fff;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.07);
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+/* Asegura que la tabla y el formulario no sobresalgan */
+.data-grid,
+.form {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+/* Formulario en columna */
+.form {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.2rem;
+}
+
+/* Etiquetas y campos */
+.label {
+  font-size: 1rem;
+  color: #4b5563;
+  margin-bottom: 0.5rem;
+  margin-top: 1.2rem; /* Más margen arriba */
+  display: block;
+}
+
+.input-field {
+  width: 96%; /* 2% menos de largo */
+  display: block;
+  padding: 0.7rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  font-size: 1rem;
+  color: #374151;
+  background: #fafafa;
+  transition: border 0.2s;
+  margin-bottom: 15px !important;
+  margin-top:  2px !important;
+  margin-left: -1 !important;
+}
+
+
+.input-field:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px #3b82f633;
+}
+
+/* Botón enviar */
+.submit-button {
+  background-color: #22c55e;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 0.375rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-top: 0px !important
+}
+
+.submit-button:disabled {
+  background: #e5e7eb;
+  color: #a1a1aa;
+  cursor: not-allowed;
+  border: 1px solid #d1d5db;
+}
+
+.submit-button:hover:enabled {
+  background-color: #16a34a;
+}
+
+/* Grilla */
+.data-grid {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  background: transparent;
+}
+
+.data-grid th,
+.data-grid td {
+  border: 1px solid #d1d5db;
+  padding: 0.7rem 0.5rem;
+  text-align: left;
+  font-size: 1rem;
+  word-break: break-word;
+  white-space: nowrap; /* Solo una línea de texto */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 120px;
+  height: auto;
+  line-height: 1.2;
+}
+
+.data-grid th {
+  background-color: #f3f4f6;
+  font-weight: bold;
+}
+
+.data-grid tr:nth-child(even) {
+  background-color: #f9fafb;
+}
+
+/* Mensajes de error */
+.error-message {
+  color: #dc2626;
+  font-size: 0.95rem;
+  margin-top: 0.2rem;
+}
+
+/* Tooltip container */
+.tooltip-bubble-cell {
+  position: relative;
+  cursor: pointer;
+  overflow: hidden; /* Asegura que el texto se trunque */
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Tooltip bubble */
+.tooltip-bubble {
+  display: none; /* Oculto por defecto */
+  position: absolute;
+  left: 50%;
+  top: 110%;
+  transform: translateX(-50%);
+  background: #fff;
+  color: #555;
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  white-space: nowrap;
+  font-size: 0.875rem;
+  z-index: 10;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  font-weight: 500;
+  text-align: center;
+  border: 1px solid #d1d5db;
+  pointer-events: none; /* Evita que interfiera con el mouse */
+}
+
+/* Mostrar el tooltip al hacer hover o focus */
+.tooltip-bubble-cell:hover .tooltip-bubble,
+.tooltip-bubble-cell:focus .tooltip-bubble {
+  display: block;
+}
+
+/* Modal de confirmación */
+.delete-modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.18);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.delete-modal {
+  background: #fff;
+  border-radius: 1rem;
+  padding: 2rem 2.5rem;
+  box-shadow: 0 8px 32px #0003;
+  min-width: 260px;
+  max-width: 90vw;
+  text-align: center;
+}
+
+.delete-modal-message {
+  font-size: 1.18rem;
+  color: #444;
+  margin-bottom: 1.5rem;
+}
+
+.delete-modal-actions {
+  display: flex;
+  gap: 1.2rem;
+  justify-content: center;
+}
+
+.delete-modal-btn {
+  padding: 0.6rem 1.5rem;
+  border-radius: 0.5rem;
+  border: none;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  background: #e5e7eb;
+  color: #444;
+  transition: background 0.2s;
+}
+
+.delete-modal-btn.ok {
+  background: #22c55e;
+  color: #fff;
+}
+
+.delete-modal-btn.ok:hover {
+  background: #16a34a;
+}
+
+.delete-modal-btn.cancel:hover {
+  background: #d1d5db;
+}
+
+/* Delete by ID form */
+.delete-id-form {
+  display: flex;
+  align-items: center; /* Alinea verticalmente al centro */
+  gap: 0.5rem;
+  margin-top: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.delete-id-form .label {
+  color: #3b82f6;
+  margin: 0;
+  display: flex;
+  align-items: center;
+}
+
+.delete-id-form .delete-id-input {
+  width: 90px;
+  min-width: 70px;
+  max-width: 110px;
+  height: 2.5rem; /* Asegura que el alto sea igual al botón */
+  margin: 0;
+  padding: 0 0.75rem;
+  font-size: 1rem;
+  display: inline-block;
+  box-sizing: border-box;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  background: #fafafa;
+  vertical-align: middle; /* Asegura alineación con el botón */
+}
+
+.delete-id-form .submit-button {
+  padding: 0 1rem;
+  height: 2.5rem; /* Igual que el input */
+  margin: 0;
+  display: inline-block;
+  box-sizing: border-box;
+  vertical-align: middle; /* Asegura alineación con el input */
+}
+
+/* Responsive */
+@media (max-width: 800px) {
+  .form-container,
+  .grid-container {
+    max-width: 99vw;
+    padding: 0.7rem;
+  }
+  .delete-modal {
+    padding: 1.2rem 0.5rem;
+  }
+}

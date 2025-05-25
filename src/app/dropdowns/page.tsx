@@ -1,6 +1,7 @@
 "use client"; // Mark this file as a client component
 
 import React, { useState } from "react";
+import "../css/dropdowns.css";
 
 export default function DropdownPractice() {
     const [profession, setProfession] = useState("");

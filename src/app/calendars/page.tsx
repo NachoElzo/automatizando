@@ -16,24 +16,33 @@ function isValidDate(dateStr: string) {
 }
 
 // --- Clock Component ---
-function Clock({ mockDate, onMockChange }: { mockDate: Date | null; onMockChange: (d: Date | null) => void }) {
+function Clock({
+  mockDate,
+  onMockChange,
+  mockInput,
+  setMockInput,
+  english,
+}: {
+  mockDate: Date | null;
+  onMockChange: (d: Date | null) => void;
+  mockInput: string;
+  setMockInput: (v: string) => void;
+  english: boolean;
+}) {
   const [now, setNow] = useState<Date>(mockDate ?? new Date());
 
   useEffect(() => {
     if (mockDate === null) {
-      // Real time: update every second
       const interval = setInterval(() => setNow(new Date()), 1000);
       return () => clearInterval(interval);
     } else {
-      // Mocked: show the mock date
       setNow(mockDate);
     }
   }, [mockDate]);
 
-  // Handlers for mocking
   function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
     const value = e.target.value;
-    // Format: YYYY-MM-DDTHH:mm:ss
+    setMockInput(value);
     const date = new Date(value);
     if (!isNaN(date.getTime())) {
       onMockChange(date);
@@ -41,10 +50,10 @@ function Clock({ mockDate, onMockChange }: { mockDate: Date | null; onMockChange
   }
 
   function handleReset() {
+    setMockInput("");
     onMockChange(null);
   }
 
-  // Format date and time
   const dateStr = now.toLocaleDateString(undefined, {
     year: "numeric",
     month: "2-digit",
@@ -57,12 +66,15 @@ function Clock({ mockDate, onMockChange }: { mockDate: Date | null; onMockChange
   });
 
   return (
-    <div className="calendar-section" style={{ marginTop: "2rem" }}>
-      <h2 className="title">Live Clock (Mockable)</h2>
-      <div className="calendar-label" style={{ fontSize: "1.2rem", marginBottom: "0.5rem" }}>
-        Current date and time:
+    <div className="calendar-section">
+      <h2 className="title">
+        {english ? "Live Clock (Mockable)" : "Reloj en Vivo (Mockeable)"}
+      </h2>
+      <div className="calendar-label">
+        {english ? "Current date and time:" : "Fecha y hora actual:"}
       </div>
       <div
+        data-testid="live-clock"
         style={{
           fontSize: "2rem",
           fontWeight: "bold",
@@ -73,22 +85,30 @@ function Clock({ mockDate, onMockChange }: { mockDate: Date | null; onMockChange
           display: "inline-block",
           marginBottom: "1rem",
         }}
-        data-testid="live-clock"
       >
         {dateStr} — {timeStr}
       </div>
       <div style={{ marginTop: "1rem" }}>
-        <label htmlFor="mock-clock" className="calendar-label" style={{ marginRight: "0.5rem" }}>
-          Mock date and time:
+        <label
+          htmlFor="mock-clock"
+          className="calendar-label"
+          style={{ marginRight: "0.5rem" }}
+        >
+          {english ? "Mock date and time:" : "Simular fecha y hora:"}
         </label>
         <input
           id="mock-clock"
           type="datetime-local"
+          value={mockInput}
           onChange={handleInputChange}
+          className="calendar-input"
           style={{ marginRight: "1rem" }}
         />
-        <button onClick={handleReset} style={{ padding: "0.3rem 1rem", borderRadius: "0.3rem" }}>
-          Reset to real time
+        <button
+          className="reset-btn"
+          onClick={handleReset}
+        >
+          {english ? "Reset to real time" : "Volver a tiempo real"}
         </button>
       </div>
     </div>
@@ -98,14 +118,15 @@ function Clock({ mockDate, onMockChange }: { mockDate: Date | null; onMockChange
 export default function CalendarsPage() {
   const [textDate, setTextDate] = useState("");
   const [pickerDate, setPickerDate] = useState("");
-  const [english, setEnglish] = useState(false);
+  const [english, setEnglish] = useState(true);
 
   // --- Clock state ---
   const [mockDate, setMockDate] = useState<Date | null>(null);
+  const [mockInput, setMockInput] = useState("");
 
   const textDateValid = isValidDate(textDate);
 
-  // All texts in English
+  // All texts in English or Spanish
   const texts = english
     ? {
         titleText: "Text Editable Calendar",
@@ -122,6 +143,15 @@ export default function CalendarsPage() {
         selectMsg2: (date: string) =>
           `🗓️ Set an alarm for ${date} and get ready for the adventure!`,
         button: "Switch to Spanish",
+        clockTitle: "Live Clock (Mockable)",
+        clockLabel: "Current date and time:",
+        clockMock: "Mock date and time:",
+        clockReset: "Reset to real time",
+        explanationTitle: "What can you do with the clock?",
+        explanation1: "See the current date and time (updates every second).",
+        explanation2: "Mock the clock by entering any date and time you want. This is useful for automation or testing time-based features.",
+        explanation3: "Reset to real time with one click.",
+        tip: "Tip: You can automate or mock the clock to test how your app behaves at any date or time!",
       }
     : {
         titleText: "Calendario Editable por Texto",
@@ -138,25 +168,21 @@ export default function CalendarsPage() {
         selectMsg2: (date: string) =>
           `🗓️ Pon una alarma para ${date} y prepárate para la aventura.`,
         button: "Cambiar a Inglés",
+        clockTitle: "Reloj en Vivo (Mockeable)",
+        clockLabel: "Fecha y hora actual:",
+        clockMock: "Simular fecha y hora:",
+        clockReset: "Volver a tiempo real",
+        explanationTitle: "¿Qué puedes hacer con el reloj?",
+        explanation1: "Ver la fecha y hora actual (se actualiza cada segundo).",
+        explanation2: "Simula el reloj ingresando cualquier fecha y hora que desees. Útil para automatización o pruebas.",
+        explanation3: "Vuelve al tiempo real con un solo clic.",
+        tip: "Consejo: ¡Puedes automatizar o simular el reloj para probar cómo se comporta tu app en cualquier fecha u hora!",
       };
 
   return (
     <div className="container">
       <button
-        style={{
-          backgroundColor: "#007bff",
-          color: "white",
-          border: "none",
-          borderRadius: "0.5rem",
-          padding: "0.6rem 1.2rem",
-          fontSize: "1rem",
-          fontWeight: 500,
-          cursor: "pointer",
-          marginBottom: "2rem",
-          marginLeft: "auto",
-          marginRight: "auto",
-          display: "block",
-        }}
+        className="lang-switch-btn"
         onClick={() => setEnglish((e) => !e)}
       >
         {texts.button}
@@ -217,24 +243,32 @@ export default function CalendarsPage() {
       </div>
 
       {/* --- Live Clock Section --- */}
-      <Clock mockDate={mockDate} onMockChange={setMockDate} />
+      <Clock
+        mockDate={mockDate}
+        onMockChange={setMockDate}
+        mockInput={mockInput}
+        setMockInput={setMockInput}
+        english={english}
+      />
 
       {/* --- Explanation --- */}
-      <div style={{ marginTop: "2.5rem", background: "#f0fdf4", borderRadius: "0.5rem", padding: "1rem 1.5rem", border: "1.5px solid #22c55e" }}>
-        <h3>What can you do with the clock?</h3>
+      <div className="calendar-result" style={{ marginTop: "2.5rem" }}>
+        <h3 className="title" style={{ fontSize: "1.2rem" }}>
+          {texts.explanationTitle}
+        </h3>
         <ul>
           <li>
-            <b>See the current date and time</b> (updates every second).
+            <b>{texts.explanation1}</b>
           </li>
           <li>
-            <b>Mock the clock</b> by entering any date and time you want. This is useful for automation or testing time-based features.
+            <b>{texts.explanation2}</b>
           </li>
           <li>
-            <b>Reset</b> to real time with one click.
+            <b>{texts.explanation3}</b>
           </li>
         </ul>
         <p>
-          <b>Tip:</b> You can automate or mock the clock to test how your app behaves at any date or time!
+          <b>{texts.tip}</b>
         </p>
       </div>
     </div>
