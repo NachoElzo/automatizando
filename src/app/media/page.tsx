@@ -10,6 +10,11 @@ const PUBLIC_VIDEO =
 const FUNNY_IMAGE =
   "https://images.unsplash.com/photo-1518717758536-85ae29035b6d?auto=format&fit=facearea&w=400&h=400&facepad=2";
 
+// Fix: Properly define the randomInt function
+function randomInt() {
+  return Math.floor(Math.random() * 10) + 1; // Returns random number between 1-10
+}
+
 export default function MediaPage() {
   const [captcha1, setCaptcha1] = useState<{ a: number; b: number } | null>(null);
   const [captcha1Input, setCaptcha1Input] = useState("");
@@ -173,8 +178,4 @@ export default function MediaPage() {
       )}
     </div>
   );
-}
-
-function randomInt() {
-  return Math.floor(Math.random() * 6) + 2; // 2-7
 }

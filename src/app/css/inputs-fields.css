@@ -9,7 +9,7 @@
 }
 
 /* Títulos */
-.title {
+.inputs-page .title {
   font-size: 2.5rem;
   font-weight: bold;
   color: #019337;
@@ -17,7 +17,7 @@
   text-align: center;
 }
 
-.subtitle {
+.inputs-page .subtitle {
   font-size: 1.25rem;
   color: #7f8286;
   margin-bottom: 2rem;
@@ -25,8 +25,8 @@
 }
 
 /* Contenedores iguales, más anchos y centrados */
-.form-container,
-.grid-container {
+.inputs-page .form-container,
+.inputs-page .grid-container {
   width: 100%;
   max-width: 700px; /* MISMO ancho para ambos */
   margin: 0 auto 2rem auto;
@@ -41,22 +41,22 @@
 }
 
 /* Asegura que la tabla y el formulario no sobresalgan */
-.data-grid,
-.form {
+.inputs-page .data-grid,
+.inputs-page .form {
   width: 100%;
   min-width: 0;
   box-sizing: border-box;
 }
 
 /* Formulario en columna */
-.form {
+.inputs-page .form {
   display: grid;
   grid-template-columns: 1fr;
   gap: 1.2rem;
 }
 
 /* Etiquetas y campos */
-.label {
+.inputs-page .label {
   font-size: 1rem;
   color: #4b5563;
   margin-bottom: 0.5rem;
@@ -64,7 +64,7 @@
   display: block;
 }
 
-.input-field {
+.inputs-page .input-field {
   width: 96%; /* 2% menos de largo */
   display: block;
   padding: 0.7rem;
@@ -80,14 +80,14 @@
 }
 
 
-.input-field:focus {
+.inputs-page .input-field:focus {
   outline: none;
   border-color: #3b82f6;
   box-shadow: 0 0 0 2px #3b82f633;
 }
 
 /* Botón enviar */
-.submit-button {
+.inputs-page .submit-button {
   background-color: #22c55e;
   color: white;
   padding: 0.75rem 1.5rem;
@@ -99,27 +99,27 @@
   margin-top: 0px !important
 }
 
-.submit-button:disabled {
+.inputs-page .submit-button:disabled {
   background: #e5e7eb;
   color: #a1a1aa;
   cursor: not-allowed;
   border: 1px solid #d1d5db;
 }
 
-.submit-button:hover:enabled {
+.inputs-page .submit-button:hover:enabled {
   background-color: #16a34a;
 }
 
 /* Grilla */
-.data-grid {
+.inputs-page .data-grid {
   width: 100%;
   border-collapse: collapse;
   table-layout: fixed;
   background: transparent;
 }
 
-.data-grid th,
-.data-grid td {
+.inputs-page .data-grid th,
+.inputs-page .data-grid td {
   border: 1px solid #d1d5db;
   padding: 0.7rem 0.5rem;
   text-align: left;
@@ -133,24 +133,24 @@
   line-height: 1.2;
 }
 
-.data-grid th {
+.inputs-page .data-grid th {
   background-color: #f3f4f6;
   font-weight: bold;
 }
 
-.data-grid tr:nth-child(even) {
+.inputs-page .data-grid tr:nth-child(even) {
   background-color: #f9fafb;
 }
 
 /* Mensajes de error */
-.error-message {
+.inputs-page .error-message {
   color: #dc2626;
   font-size: 0.95rem;
   margin-top: 0.2rem;
 }
 
 /* Tooltip container */
-.tooltip-bubble-cell {
+.inputs-page .tooltip-bubble-cell {
   position: relative;
   cursor: pointer;
   overflow: hidden; /* Asegura que el texto se trunque */
@@ -159,7 +159,7 @@
 }
 
 /* Tooltip bubble */
-.tooltip-bubble {
+.inputs-page .tooltip-bubble {
   display: none; /* Oculto por defecto */
   position: absolute;
   left: 50%;
@@ -180,13 +180,13 @@
 }
 
 /* Mostrar el tooltip al hacer hover o focus */
-.tooltip-bubble-cell:hover .tooltip-bubble,
-.tooltip-bubble-cell:focus .tooltip-bubble {
+.inputs-page .tooltip-bubble-cell:hover .tooltip-bubble,
+.inputs-page .tooltip-bubble-cell:focus .tooltip-bubble {
   display: block;
 }
 
 /* Modal de confirmación */
-.delete-modal-backdrop {
+.inputs-page .delete-modal-backdrop {
   position: fixed;
   top: 0;
   left: 0;
@@ -199,7 +199,7 @@
   justify-content: center;
 }
 
-.delete-modal {
+.inputs-page .delete-modal {
   background: #fff;
   border-radius: 1rem;
   padding: 2rem 2.5rem;
@@ -209,19 +209,19 @@
   text-align: center;
 }
 
-.delete-modal-message {
+.inputs-page .delete-modal-message {
   font-size: 1.18rem;
   color: #444;
   margin-bottom: 1.5rem;
 }
 
-.delete-modal-actions {
+.inputs-page .delete-modal-actions {
   display: flex;
   gap: 1.2rem;
   justify-content: center;
 }
 
-.delete-modal-btn {
+.inputs-page .delete-modal-btn {
   padding: 0.6rem 1.5rem;
   border-radius: 0.5rem;
   border: none;
@@ -233,21 +233,21 @@
   transition: background 0.2s;
 }
 
-.delete-modal-btn.ok {
+.inputs-page .delete-modal-btn.ok {
   background: #22c55e;
   color: #fff;
 }
 
-.delete-modal-btn.ok:hover {
+.inputs-page .delete-modal-btn.ok:hover {
   background: #16a34a;
 }
 
-.delete-modal-btn.cancel:hover {
+.inputs-page .delete-modal-btn.cancel:hover {
   background: #d1d5db;
 }
 
 /* Delete by ID form */
-.delete-id-form {
+.inputs-page .delete-id-form {
   display: flex;
   align-items: center; /* Alinea verticalmente al centro */
   gap: 0.5rem;
@@ -255,14 +255,14 @@
   margin-bottom: 0.5rem;
 }
 
-.delete-id-form .label {
+.inputs-page .delete-id-form .label {
   color: #3b82f6;
   margin: 0;
   display: flex;
   align-items: center;
 }
 
-.delete-id-form .delete-id-input {
+.inputs-page .delete-id-form .delete-id-input {
   width: 90px;
   min-width: 70px;
   max-width: 110px;
@@ -278,7 +278,7 @@
   vertical-align: middle; /* Asegura alineación con el botón */
 }
 
-.delete-id-form .submit-button {
+.inputs-page .delete-id-form .submit-button {
   padding: 0 1rem;
   height: 2.5rem; /* Igual que el input */
   margin: 0;
@@ -289,12 +289,12 @@
 
 /* Responsive */
 @media (max-width: 800px) {
-  .form-container,
-  .grid-container {
+  .inputs-page .form-container,
+  .inputs-page .grid-container {
     max-width: 99vw;
     padding: 0.7rem;
   }
-  .delete-modal {
+  .inputs-page .delete-modal {
     padding: 1.2rem 0.5rem;
   }
 }
