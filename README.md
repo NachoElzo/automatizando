@@ -1,36 +1,61 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Automatizando - Test Automation App
+
+This Next.js application is designed for testing automation scenarios with Playwright, featuring complex user interactions, form validations, and media content.
+
+## Features
+
+### 🎯 API Testing Page (`/api`)
+- GET, POST, PUT, DELETE request testing
+- Response validation and error handling
+- Dynamic data manipulation
+- Status code verification
+
+### 🎬 Media Lab Page (`/media`)
+- Multi-step captcha system (Math, Image Recognition, Drag & Drop)
+- Interactive advertisements with timers
+- YouTube-style video player with custom controls
+- Video quality settings (Auto, 1080p, 720p, 480p, 360p, 240p)
+- Playback speed controls (0.25x to 2x)
+- Volume and mute controls
+- Fullscreen functionality
+- Settings menu with responsive design
 
 ## Getting Started
 
-First, run the development server:
-
+### Development Mode
 ```bash
+# Install dependencies
+npm install
+
+# Run development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Production Mode Testing
+```bash
+# Create production build
+npm run build
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+# Run production server
+npm run start
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Or in one command:
+```bash
+npm run build && npm run start
+```
 
-## Learn More
+### Clean Cache and Rebuild
+```bash
+# Remove cache and rebuild
+rm -rf .next
+npm run build
+npm run start
+```
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Debug Build
+```bash
+# Build with debug information
+npm run build -- --debug
+npm run start
+```

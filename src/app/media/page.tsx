@@ -9,33 +9,17 @@ const FUNNY_IMAGE = "https://images.unsplash.com/photo-1518717758536-85ae29035b6
 
 // Images for drag & drop captcha
 const CAPTCHA_IMAGES = [
-	{
-		id: 1,
-		src: "https://images.unsplash.com/photo-1567306226416-28f0efdc88ce?w=100&h=100&fit=crop",
-		name: "🍎 Apple",
-	},
-	{
-		id: 2,
-		src: "https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=100&h=100&fit=crop",
-		name: "🍌 Banana",
-	},
-	{
-		id: 3,
-		src: "https://images.unsplash.com/photo-1547514701-42782101795e?w=100&h=100&fit=crop",
-		name: "🍇 Grapes",
-	},
-	{
-		id: 4,
-		src: "https://images.unsplash.com/photo-1580013759032-c96505e24c1f?w=100&h=100&fit=crop",
-		name: "🍊 Orange",
-	},
+	{ id: 1, src: "https://images.unsplash.com/photo-1567306226416-28f0efdc88ce?w=100&h=100&fit=crop", name: "🍎 Apple" },
+	{ id: 2, src: "https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=100&h=100&fit=crop", name: "🍌 Banana" },
+	{ id: 3, src: "https://images.unsplash.com/photo-1547514701-42782101795e?w=100&h=100&fit=crop", name: "🍇 Grapes" },
+	{ id: 4, src: "https://images.unsplash.com/photo-1580013759032-c96505e24c1f?w=100&h=100&fit=crop", name: "🍊 Orange" }
 ];
 
 const ADS = [
 	{ message: "🎮 New Game Available! Download Now!", duration: 8, color: "#6366f1" },
 	{ message: "🛍️ 50% OFF Everything! Limited Time!", duration: 6, color: "#f59e0b" },
 	{ message: "📱 Upgrade Your Phone Today!", duration: 7, color: "#10b981" },
-	{ message: "🍕 Order Pizza - Free Delivery!", duration: 5, color: "#ef4444" },
+	{ message: "🍕 Order Pizza - Free Delivery!", duration: 5, color: "#ef4444" }
 ];
 
 // Video quality options
@@ -45,7 +29,7 @@ const VIDEO_QUALITIES = [
 	{ label: "720p", value: "720p", width: "1280px", height: "720px" },
 	{ label: "480p", value: "480p", width: "854px", height: "480px" },
 	{ label: "360p", value: "360p", width: "640px", height: "360px" },
-	{ label: "240p", value: "240p", width: "426px", height: "240px" },
+	{ label: "240p", value: "240p", width: "426px", height: "240px" }
 ];
 
 const PLAYBACK_SPEEDS = [
@@ -55,7 +39,7 @@ const PLAYBACK_SPEEDS = [
 	{ label: "Normal", value: 1 },
 	{ label: "1.25x", value: 1.25 },
 	{ label: "1.5x", value: 1.5 },
-	{ label: "2x", value: 2 },
+	{ label: "2x", value: 2 }
 ];
 
 function randomInt() {
@@ -466,7 +450,7 @@ export default function MediaPage() {
 
 					{captcha3Valid && <div className="media-success">Perfect! Loading YouTube player... 🎉</div>}
 					
-					{/* Only show reset button if captcha3 is NOT completed */}
+					{/* Only show reset button if captcha3 is NOT completed - RESTORED LOGIC */}
 					{!captcha3Valid && (
 						<button className="api-btn reset-btn" onClick={resetCaptcha3}>
 							🔄 Reset Challenge
@@ -488,22 +472,36 @@ export default function MediaPage() {
 							aspectRatio: "16/9"
 						}}
 					>
+						{/* Main Video */}
+						<video
+							ref={mainVideoRef}
+							className="main-video"
+							src={PUBLIC_VIDEO}
+							poster="https://peach.blender.org/wp-content/uploads/title_anouncement.jpg?x11217"
+							onPlay={() => setVideoPlaying(true)}
+							onPause={() => setVideoPlaying(false)}
+							data-testid="main-video"
+							data-quality={videoQuality}
+							data-speed={playbackSpeed}
+						/>
+						
 						{/* Video Ad Overlay */}
 						{videoAdActive && (
 							<div className="video-ad-overlay" data-testid="video-ad-overlay">
 								<div className="ad-content">
 									<div className="ad-header">
 										<span className="ad-label">Advertisement</span>
-										<span className="ad-timer" data-testid="video-ad-timer">
+										<div className="ad-timer" data-testid="video-ad-timer">
 											{videoAdSkippable ? (
 												<button className="skip-ad-btn" onClick={skipAd} data-testid="skip-ad-btn">
 													Skip Ad →
 												</button>
 											) : (
-												`Skip in ${videoAdTime - 5}s`
+												<span>Skip in {Math.max(0, videoAdTime - 5)}s</span>
 											)}
-										</span>
+										</div>
 									</div>
+									
 									<div className="ad-video-content">
 										<div className="ad-video-mock">
 											<span style={{ fontSize: 64, marginBottom: "1rem", display: "block" }}>🎯</span>
@@ -515,126 +513,114 @@ export default function MediaPage() {
 													style={{ width: `${((15 - videoAdTime) / 15) * 100}%` }}
 												/>
 											</div>
-											<p style={{ fontSize: "0.9rem", marginTop: "1rem", opacity: 0.8 }}>
-												Ad ends in {videoAdTime} seconds
-											</p>
+										</div>
+									</div>
+									
+									<div className="ad-bottom-info">
+										<div className="ad-countdown">
+											⏱️ Ad ends in {videoAdTime} seconds
 										</div>
 									</div>
 								</div>
 							</div>
 						)}
 
-						{/* Main Video */}
+						{/* Custom Video Controls - USING CSS CLASSES ONLY */}
 						{mainVideoReady && (
-							<>
-								<video
-									ref={mainVideoRef}
-									className="main-video"
-									src={PUBLIC_VIDEO}
-									poster="https://peach.blender.org/wp-content/uploads/title_anouncement.jpg?x11217"
-									onPlay={() => setVideoPlaying(true)}
-									onPause={() => setVideoPlaying(false)}
-									data-testid="main-video"
-									data-quality={videoQuality}
-									data-speed={playbackSpeed}
-								/>
+							<div className="video-controls">
+								<div className="progress-bar" onClick={handleProgressClick}>
+									<div 
+										className="progress-fill"
+										style={{ width: `${(videoProgress / videoDuration) * 100}%` }}
+									/>
+								</div>
 								
-								{/* Custom Video Controls */}
-								<div className="video-controls">
-									<div className="progress-bar" onClick={handleProgressClick}>
-										<div 
-											className="progress-fill"
-											style={{ width: `${(videoProgress / videoDuration) * 100}%` }}
+								<div className="controls-row">
+									<div className="left-controls">
+										<button className="control-btn" onClick={togglePlayPause} data-testid="play-pause-btn">
+											{videoPlaying ? "⏸️" : "▶️"}
+										</button>
+										<button className="control-btn" onClick={toggleMute} data-testid="mute-btn">
+											{videoMuted ? "🔇" : "🔊"}
+										</button>
+										<input
+											type="range"
+											min="0"
+											max="1"
+											step="0.1"
+											value={videoVolume}
+											onChange={handleVolumeChange}
+											className="volume-slider"
+											data-testid="volume-slider"
 										/>
+										<span className="time-display">
+											{formatTime(videoProgress)} / {formatTime(videoDuration)}
+										</span>
+										<span className="speed-indicator" data-testid="speed-indicator">
+											{playbackSpeed}x
+										</span>
+										<span className="quality-indicator" data-testid="quality-indicator">
+											{videoQuality}
+										</span>
 									</div>
-									
-									<div className="controls-row">
-										<div className="left-controls">
-											<button className="control-btn" onClick={togglePlayPause} data-testid="play-pause-btn">
-												{videoPlaying ? "⏸️" : "▶️"}
+									<div className="right-controls">
+										<div className="settings-menu">
+											<button 
+												className="control-btn" 
+												onClick={() => setShowSettings(!showSettings)}
+												data-testid="settings-btn"
+											>
+												⚙️
 											</button>
-											<button className="control-btn" onClick={toggleMute} data-testid="mute-btn">
-												{videoMuted ? "🔇" : "🔊"}
-											</button>
-											<input
-												type="range"
-												min="0"
-												max="1"
-												step="0.1"
-												value={videoVolume}
-												onChange={handleVolumeChange}
-												className="volume-slider"
-												data-testid="volume-slider"
-											/>
-											<span className="time-display">
-												{formatTime(videoProgress)} / {formatTime(videoDuration)}
-											</span>
-											<span className="speed-indicator" data-testid="speed-indicator">
-												{playbackSpeed}x
-											</span>
-											<span className="quality-indicator" data-testid="quality-indicator">
-												{videoQuality}
-											</span>
-										</div>
-										<div className="right-controls">
-											<div className="settings-menu">
-												<button 
-													className="control-btn" 
-													onClick={() => setShowSettings(!showSettings)}
-													data-testid="settings-btn"
-												>
-													⚙️
-												</button>
-												{showSettings && (
-													<div className="settings-dropdown" data-testid="settings-menu">
-														<div className="settings-section">
-															<h4>Quality</h4>
-															{VIDEO_QUALITIES.map(quality => (
-																<button
-																	key={quality.value}
-																	className={`settings-option ${videoQuality === quality.value ? 'active' : ''}`}
-																	onClick={() => handleQualityChange(quality.value)}
-																	data-testid={`quality-${quality.value}`}
-																>
-																	{quality.label}
-																	{videoQuality === quality.value && ' ✓'}
-																</button>
-															))}
-														</div>
-														<div className="settings-section">
-															<h4>Playback Speed</h4>
-															{PLAYBACK_SPEEDS.map(speed => (
-																<button
-																	key={speed.value}
-																	className={`settings-option ${playbackSpeed === speed.value ? 'active' : ''}`}
-																	onClick={() => handleSpeedChange(speed.value)}
-																	data-testid={`speed-${speed.value}`}
-																>
-																	{speed.label}
-																	{playbackSpeed === speed.value && ' ✓'}
-																</button>
-															))}
-														</div>
-														<div className="settings-section">
-															<h4>Options</h4>
+											{showSettings && (
+												<div className="settings-dropdown" data-testid="settings-menu">
+													<div className="settings-section">
+														<h4>Quality</h4>
+														{VIDEO_QUALITIES.map(quality => (
 															<button
-																className={`settings-option ${autoplay ? 'active' : ''}`}
-																onClick={() => setAutoplay(!autoplay)}
-																data-testid="autoplay-toggle"
+																key={quality.value}
+																className={`settings-option ${videoQuality === quality.value ? 'active' : ''}`}
+																onClick={() => handleQualityChange(quality.value)}
+																data-testid={`quality-${quality.value}`}
 															>
-																Autoplay {autoplay ? '✓' : ''}
+																{quality.label}
+																{videoQuality === quality.value && ' ✓'}
 															</button>
-														</div>
+														))}
 													</div>
-												)}
-											</div>
-											<button className="control-btn" onClick={toggleFullscreen} data-testid="fullscreen-btn">
-												🔲
-											</button>
+													<div className="settings-section">
+														<h4>Playback Speed</h4>
+														{PLAYBACK_SPEEDS.map(speed => (
+															<button
+																key={speed.value}
+																className={`settings-option ${playbackSpeed === speed.value ? 'active' : ''}`}
+																onClick={() => handleSpeedChange(speed.value)}
+																data-testid={`speed-${speed.value}`}
+															>
+																{speed.label}
+																{playbackSpeed === speed.value && ' ✓'}
+															</button>
+														))}
+													</div>
+													<div className="settings-section">
+														<h4>Options</h4>
+														<button
+															className={`settings-option ${autoplay ? 'active' : ''}`}
+															onClick={() => setAutoplay(!autoplay)}
+															data-testid="autoplay-toggle"
+														>
+															Autoplay {autoplay ? '✓' : ''}
+														</button>
+													</div>
+												</div>
+											)}
 										</div>
+										<button className="control-btn" onClick={toggleFullscreen} data-testid="fullscreen-btn">
+											🔲
+										</button>
 									</div>
 								</div>
-							</>
+							</div>
 						)}
 					</div>
 
