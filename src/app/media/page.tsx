@@ -1,21 +1,36 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Image from "next/image";
 import "../css/media.css";
 
-const PUBLIC_VIDEO =
-  "https://www.w3schools.com/html/mov_bbb.mp4";
+const PUBLIC_VIDEO = "https://www.w3schools.com/html/mov_bbb.mp4";
+const FUNNY_IMAGE = "https://images.unsplash.com/photo-1518717758536-85ae29035b6d?auto=format&fit=facearea&w=400&h=400&facepad=2";
 
-const FUNNY_IMAGE =
-  "https://images.unsplash.com/photo-1518717758536-85ae29035b6d?auto=format&fit=facearea&w=400&h=400&facepad=2";
+// Images for drag & drop captcha
+const CAPTCHA_IMAGES = [
+  { id: 1, src: "https://images.unsplash.com/photo-1567306226416-28f0efdc88ce?w=100&h=100&fit=crop", name: "🍎 Apple" },
+  { id: 2, src: "https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=100&h=100&fit=crop", name: "🍌 Banana" },
+  { id: 3, src: "https://images.unsplash.com/photo-1547514701-42782101795e?w=100&h=100&fit=crop", name: "🍇 Grapes" },
+  { id: 4, src: "https://images.unsplash.com/photo-1580013759032-c96505e24c1f?w=100&h=100&fit=crop", name: "🍊 Orange" }
+];
 
-// Fix: Properly define the randomInt function
+const ADS = [
+  { message: "🎮 New Game Available! Download Now!", duration: 8, color: "#6366f1" },
+  { message: "🛍️ 50% OFF Everything! Limited Time!", duration: 6, color: "#f59e0b" },
+  { message: "📱 Upgrade Your Phone Today!", duration: 7, color: "#10b981" },
+  { message: "🍕 Order Pizza - Free Delivery!", duration: 5, color: "#ef4444" }
+];
+
 function randomInt() {
-  return Math.floor(Math.random() * 10) + 1; // Returns random number between 1-10
+  return Math.floor(Math.random() * 10) + 1;
 }
 
 export default function MediaPage() {
+  // Video refs
+  const mainVideoRef = useRef<HTMLVideoElement>(null);
+
+  // Captcha states
   const [captcha1, setCaptcha1] = useState<{ a: number; b: number } | null>(null);
   const [captcha1Input, setCaptcha1Input] = useState("");
   const [captcha1Valid, setCaptcha1Valid] = useState(false);
@@ -23,41 +38,103 @@ export default function MediaPage() {
   const [captcha2Input, setCaptcha2Input] = useState("");
   const [captcha2Valid, setCaptcha2Valid] = useState(false);
 
-  const [adWatched, setAdWatched] = useState(false);
-  const [showVideo, setShowVideo] = useState(false);
+  const [captcha3Valid, setCaptcha3Valid] = useState(false);
+  const [draggedItem, setDraggedItem] = useState<number | null>(null);
+  const [correctOrder] = useState([1, 2, 3, 4]);
+  const [userOrder, setUserOrder] = useState<(number | undefined)[]>(new Array(4).fill(undefined));
+  const [shuffledImages, setShuffledImages] = useState(CAPTCHA_IMAGES);
 
-  const [adTime, setAdTime] = useState(5);
+  // Ad system (for initial captchas)
+  const [currentAd, setCurrentAd] = useState(0);
+  const [adWatched, setAdWatched] = useState(0);
+  const [adTime, setAdTime] = useState(0);
   const [adPlaying, setAdPlaying] = useState(false);
 
-  // Popup error state
-  const [popupError, setPopupError] = useState<string | null>(null);
+  // YouTube-style video player states
+  const [showYouTubePlayer, setShowYouTubePlayer] = useState(false);
+  const [videoAdActive, setVideoAdActive] = useState(false);
+  const [videoAdTime, setVideoAdTime] = useState(15); // 15 seconds ad
+  const [videoAdSkippable, setVideoAdSkippable] = useState(false);
+  const [mainVideoReady, setMainVideoReady] = useState(false);
+  const [videoProgress, setVideoProgress] = useState(0);
+  const [videoDuration, setVideoDuration] = useState(0);
+  const [videoPlaying, setVideoPlaying] = useState(false);
+  const [videoMuted, setVideoMuted] = useState(false);
+  const [videoVolume, setVideoVolume] = useState(1);
 
-  // Estado para controlar el placeholder de los inputs
+  // Popup and placeholders
+  const [popupError, setPopupError] = useState<string | null>(null);
   const [captcha1Placeholder, setCaptcha1Placeholder] = useState("Type your answer");
-  const [captcha2Placeholder, setCaptcha2Placeholder] = useState("Type the animal (in English or Spanish)");
+  const [captcha2Placeholder, setCaptcha2Placeholder] = useState("Type the animal (English/Spanish)");
 
   useEffect(() => {
     setCaptcha1({ a: randomInt(), b: randomInt() });
+    const shuffled = [...CAPTCHA_IMAGES].sort(() => Math.random() - 0.5);
+    setShuffledImages(shuffled);
   }, []);
+
+  // YouTube-style video ad timer
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (videoAdActive && videoAdTime > 0) {
+      interval = setInterval(() => {
+        setVideoAdTime(prev => {
+          if (prev <= 1) {
+            setVideoAdActive(false);
+            setMainVideoReady(true);
+            return 0;
+          }
+          if (prev === 10) {
+            setVideoAdSkippable(true); // Allow skip after 5 seconds
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [videoAdActive, videoAdTime]);
+
+  // Video progress tracker
+  useEffect(() => {
+    const video = mainVideoRef.current;
+    if (video) {
+      const updateProgress = () => {
+        setVideoProgress(video.currentTime);
+        setVideoDuration(video.duration);
+      };
+      video.addEventListener('timeupdate', updateProgress);
+      video.addEventListener('loadedmetadata', updateProgress);
+      return () => {
+        video.removeEventListener('timeupdate', updateProgress);
+        video.removeEventListener('loadedmetadata', updateProgress);
+      };
+    }
+  }, [mainVideoReady]);
+
+  const startAd = (adIndex: number) => {
+    const ad = ADS[adIndex];
+    setCurrentAd(adIndex);
+    setAdPlaying(true);
+    let t = ad.duration;
+    setAdTime(t);
+    
+    const interval = setInterval(() => {
+      t--;
+      setAdTime(t);
+      if (t <= 0) {
+        clearInterval(interval);
+        setAdWatched(prev => prev + 1);
+        setAdPlaying(false);
+      }
+    }, 1000);
+  };
 
   const handleCaptcha1 = (e: React.FormEvent) => {
     e.preventDefault();
     if (!captcha1) return;
     if (parseInt(captcha1Input) === captcha1.a + captcha1.b) {
       setCaptcha1Valid(true);
-      setAdPlaying(true);
-      let t = 5;
-      setAdTime(t);
-      const interval = setInterval(() => {
-        t--;
-        setAdTime(t);
-        if (t <= 0) {
-          clearInterval(interval);
-          setAdWatched(true);
-          setShowVideo(true);
-          setAdPlaying(false);
-        }
-      }, 1000);
+      startAd(0);
     } else {
       setCaptcha1Input("");
       setCaptcha1({ a: randomInt(), b: randomInt() });
@@ -67,22 +144,119 @@ export default function MediaPage() {
 
   const handleCaptcha2 = (e: React.FormEvent) => {
     e.preventDefault();
-    if (
-      captcha2Input.trim().toLowerCase() === "dog" ||
-      captcha2Input.trim().toLowerCase() === "perro"
-    ) {
+    if (captcha2Input.trim().toLowerCase() === "dog" || captcha2Input.trim().toLowerCase() === "perro") {
       setCaptcha2Valid(true);
+      if (adWatched >= 1) {
+        startAd(1);
+      }
     } else {
       setCaptcha2Input("");
-      setPopupError("Try again! (Hint: It's a dog 🐶)");
+      setPopupError("Try again! (Hint: It&apos;s a dog 🐶)");
     }
+  };
+
+  const handleDragStart = (e: React.DragEvent, id: number) => {
+    setDraggedItem(id);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+  };
+
+  const handleDrop = (e: React.DragEvent, position: number) => {
+    e.preventDefault();
+    if (draggedItem === null) return;
+    
+    const newOrder = [...userOrder];
+    newOrder[position] = draggedItem;
+    setUserOrder(newOrder);
+    setDraggedItem(null);
+
+    if (newOrder.every(item => item !== undefined)) {
+      if (JSON.stringify(newOrder) === JSON.stringify(correctOrder)) {
+        setCaptcha3Valid(true);
+        // Show YouTube player after completing all captchas
+        setTimeout(() => {
+          setShowYouTubePlayer(true);
+          setVideoAdActive(true);
+          setVideoAdTime(15);
+          setVideoAdSkippable(false);
+        }, 1000);
+      } else {
+        setPopupError("Wrong order! Try again. Correct order: Apple, Banana, Grapes, Orange 🍎🍌🍇🍊");
+        setTimeout(() => {
+          setUserOrder(new Array(4).fill(undefined));
+        }, 2000);
+      }
+    }
+  };
+
+  const resetCaptcha3 = () => {
+    setUserOrder(new Array(4).fill(undefined));
+    setCaptcha3Valid(false);
+    const shuffled = [...CAPTCHA_IMAGES].sort(() => Math.random() - 0.5);
+    setShuffledImages(shuffled);
+  };
+
+  // YouTube-style video controls
+  const skipAd = () => {
+    if (videoAdSkippable) {
+      setVideoAdActive(false);
+      setMainVideoReady(true);
+    }
+  };
+
+  const togglePlayPause = () => {
+    const video = mainVideoRef.current;
+    if (video) {
+      if (videoPlaying) {
+        video.pause();
+      } else {
+        video.play();
+      }
+      setVideoPlaying(!videoPlaying);
+    }
+  };
+
+  const toggleMute = () => {
+    const video = mainVideoRef.current;
+    if (video) {
+      video.muted = !videoMuted;
+      setVideoMuted(!videoMuted);
+    }
+  };
+
+  const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const volume = parseFloat(e.target.value);
+    setVideoVolume(volume);
+    const video = mainVideoRef.current;
+    if (video) {
+      video.volume = volume;
+    }
+  };
+
+  const handleProgressClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    const video = mainVideoRef.current;
+    if (video && videoDuration) {
+      const rect = e.currentTarget.getBoundingClientRect();
+      const pos = (e.clientX - rect.left) / rect.width;
+      video.currentTime = pos * videoDuration;
+    }
+  };
+
+  const formatTime = (time: number) => {
+    const minutes = Math.floor(time / 60);
+    const seconds = Math.floor(time % 60);
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
 
   return (
     <div className="media-container">
-      <h1 className="media-title">MediaLab</h1>
+      <h1 className="media-title">🎬 Advanced MediaLab</h1>
+      
+      {/* Captcha 1 - Math */}
       <div className="media-section">
-        <h2 className="media-subtitle">Captcha 1: Solve to unlock the ad</h2>
+        <h2 className="media-subtitle">🔢 Captcha 1: Math Challenge</h2>
         <form onSubmit={handleCaptcha1} className="media-form">
           <label className="media-label">
             {captcha1 ? `What is ${captcha1.a} + ${captcha1.b}?` : "Loading..."}
@@ -99,69 +273,223 @@ export default function MediaPage() {
             required
           />
           <button className="api-btn post" type="submit" disabled={captcha1Valid || !captcha1}>
-            {captcha1Valid ? "Unlocked!" : "Verify"}
+            {captcha1Valid ? "✅ Unlocked!" : "Verify"}
           </button>
         </form>
       </div>
 
-      {captcha1Valid && !adWatched && (
-        <div className="media-advertiser">
-          <div className="media-ad-label">Advertiser: Watch this short ad to continue</div>
+      {/* First Ad */}
+      {captcha1Valid && adWatched < 1 && adPlaying && (
+        <div className="media-advertiser" style={{ borderColor: ADS[currentAd].color }} data-testid="ad-container-1">
+          <div className="media-ad-label">📺 Advertisement #{currentAd + 1}</div>
           <div className="media-ad-box">
-            <span role="img" aria-label="megaphone" style={{ fontSize: 32 }}>📢</span>
-            <div className="media-ad-timer">
-              {adPlaying ? `Ad ends in ${adTime} seconds...` : "Loading..."}
+            <div className="media-ad-content" style={{ color: ADS[currentAd].color }}>
+              {ADS[currentAd].message}
+            </div>
+            <div className="media-ad-timer" data-testid="ad-timer-1">
+              ⏱️ Ad ends in {adTime} seconds...
             </div>
           </div>
         </div>
       )}
 
-      {showVideo && (
+      {/* Captcha 2 - Animal */}
+      {captcha1Valid && adWatched >= 1 && (
         <div className="media-section">
-          <h2 className="media-subtitle">Main Video</h2>
-          <video
-            className="media-video"
-            src={PUBLIC_VIDEO}
-            controls
-            width={400}
-            poster="https://peach.blender.org/wp-content/uploads/title_anouncement.jpg?x11217"
+          <h2 className="media-subtitle">🐾 Captcha 2: Animal Recognition</h2>
+          <Image
+            src={FUNNY_IMAGE}
+            alt="Funny animal"
+            className="media-funny-img"
+            width={180}
+            height={180}
+            style={{ objectFit: "cover", borderRadius: "1rem" }}
+            priority
           />
+          <form onSubmit={handleCaptcha2} className="media-form">
+            <input
+              className="api-input"
+              type="text"
+              placeholder={captcha2Placeholder}
+              onFocus={() => setCaptcha2Placeholder("")}
+              onBlur={() => !captcha2Input && setCaptcha2Placeholder("Type the animal (English/Spanish)")}
+              value={captcha2Input}
+              onChange={e => setCaptcha2Input(e.target.value)}
+              disabled={captcha2Valid}
+              maxLength={20}
+              required
+            />
+            <button className="api-btn post" type="submit" disabled={captcha2Valid}>
+              {captcha2Valid ? "✅ Correct!" : "Verify"}
+            </button>
+          </form>
+          {captcha2Valid && <div className="media-success">Well done! 🐶</div>}
         </div>
       )}
 
-      <div className="media-section">
-        <h2 className="media-subtitle">Captcha 2: What animal do you see?</h2>
-        <Image
-          src={FUNNY_IMAGE}
-          alt="Funny animal"
-          className="media-funny-img"
-          width={400}
-          height={400}
-          style={{ objectFit: "cover", borderRadius: "1rem" }}
-          priority
-        />
-        <form onSubmit={handleCaptcha2} className="media-form">
-          <input
-            className="api-input"
-            type="text"
-            placeholder={captcha2Placeholder}
-            onFocus={() => setCaptcha2Placeholder("")}
-            onBlur={() => !captcha2Input && setCaptcha2Placeholder("Type the animal (in English or Spanish)")}
-            value={captcha2Input}
-            onChange={e => setCaptcha2Input(e.target.value)}
-            disabled={captcha2Valid}
-            maxLength={20}
-            required
-          />
-          <button className="api-btn post" type="submit" disabled={captcha2Valid}>
-            {captcha2Valid ? "Correct!" : "Verify"}
-          </button>
-        </form>
-        {captcha2Valid && (
-          <div className="media-success">Well done! 🐶</div>
-        )}
-      </div>
+      {/* Second Ad */}
+      {captcha2Valid && adWatched < 2 && adPlaying && (
+        <div className="media-advertiser" style={{ borderColor: ADS[currentAd].color }} data-testid="ad-container-2">
+          <div className="media-ad-label">📺 Advertisement #{currentAd + 1}</div>
+          <div className="media-ad-box">
+            <div className="media-ad-content" style={{ color: ADS[currentAd].color }}>
+              {ADS[currentAd].message}
+            </div>
+            <div className="media-ad-timer" data-testid="ad-timer-2">
+              ⏱️ Ad ends in {adTime} seconds...
+            </div>
+          </div>
+        </div>
+      )}
 
+      {/* Captcha 3 - Drag & Drop */}
+      {captcha2Valid && adWatched >= 2 && !showYouTubePlayer && (
+        <div className="media-section">
+          <h2 className="media-subtitle">🧩 Captcha 3: Drag & Drop Challenge</h2>
+          <p className="captcha3-instruction">
+            Drag the fruits to the correct alphabetical order: Apple, Banana, Grapes, Orange
+          </p>
+          
+          <div className="captcha3-dropzone">
+            {[0, 1, 2, 3].map(position => (
+              <div
+                key={position}
+                className="drop-slot"
+                onDragOver={handleDragOver}
+                onDrop={(e) => handleDrop(e, position)}
+              >
+                {userOrder[position] !== undefined ? (
+                  <div className="dropped-item">
+                    {CAPTCHA_IMAGES.find(img => img.id === userOrder[position])?.name}
+                  </div>
+                ) : (
+                  <div className="empty-slot">{position + 1}</div>
+                )}
+              </div>
+            ))}
+          </div>
+
+          <div className="captcha3-items">
+            {shuffledImages.filter(img => !userOrder.includes(img.id)).map(image => (
+              <div
+                key={image.id}
+                className="draggable-item"
+                draggable
+                onDragStart={(e) => handleDragStart(e, image.id)}
+              >
+                <Image
+                  src={image.src}
+                  alt={image.name}
+                  width={60}
+                  height={60}
+                  style={{ borderRadius: "8px" }}
+                />
+                <span>{image.name}</span>
+              </div>
+            ))}
+          </div>
+
+          {captcha3Valid && <div className="media-success">Perfect! Loading YouTube player... 🎉</div>}
+          
+          <button className="api-btn reset-btn" onClick={resetCaptcha3}>
+            🔄 Reset Challenge
+          </button>
+        </div>
+      )}
+
+      {/* YouTube-style Video Player */}
+      {showYouTubePlayer && (
+        <div className="media-section youtube-player">
+          <h2 className="media-subtitle">🎬 Premium Video Content</h2>
+          
+          <div className="video-container" data-testid="youtube-player">
+            {/* Video Ad Overlay */}
+            {videoAdActive && (
+              <div className="video-ad-overlay" data-testid="video-ad-overlay">
+                <div className="ad-content">
+                  <div className="ad-header">
+                    <span className="ad-label">Advertisement</span>
+                    <span className="ad-timer" data-testid="video-ad-timer">
+                      {videoAdSkippable ? (
+                        <button className="skip-ad-btn" onClick={skipAd} data-testid="skip-ad-btn">
+                          Skip Ad →
+                        </button>
+                      ) : (
+                        `Ad will end in ${videoAdTime}s`
+                      )}
+                    </span>
+                  </div>
+                  <div className="ad-video-content">
+                    <span style={{ fontSize: 48 }}>🎯</span>
+                    <h3>Premium Gaming Experience!</h3>
+                    <p>Join millions of players worldwide</p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Main Video */}
+            {mainVideoReady && (
+              <>
+                <video
+                  ref={mainVideoRef}
+                  className="main-video"
+                  src={PUBLIC_VIDEO}
+                  poster="https://peach.blender.org/wp-content/uploads/title_anouncement.jpg?x11217"
+                  onPlay={() => setVideoPlaying(true)}
+                  onPause={() => setVideoPlaying(false)}
+                  data-testid="main-video"
+                />
+                
+                {/* Custom Video Controls */}
+                <div className="video-controls">
+                  <div className="progress-bar" onClick={handleProgressClick}>
+                    <div 
+                      className="progress-fill"
+                      style={{ width: `${(videoProgress / videoDuration) * 100}%` }}
+                    />
+                  </div>
+                  
+                  <div className="controls-row">
+                    <div className="left-controls">
+                      <button className="control-btn" onClick={togglePlayPause}>
+                        {videoPlaying ? "⏸️" : "▶️"}
+                      </button>
+                      <button className="control-btn" onClick={toggleMute}>
+                        {videoMuted ? "🔇" : "🔊"}
+                      </button>
+                      <input
+                        type="range"
+                        min="0"
+                        max="1"
+                        step="0.1"
+                        value={videoVolume}
+                        onChange={handleVolumeChange}
+                        className="volume-slider"
+                      />
+                      <span className="time-display">
+                        {formatTime(videoProgress)} / {formatTime(videoDuration)}
+                      </span>
+                    </div>
+                    <div className="right-controls">
+                      <button className="control-btn">⚙️</button>
+                      <button className="control-btn">🔲</button>
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+
+          {mainVideoReady && (
+            <div className="media-success">
+              🏆 Congratulations! You&apos;ve unlocked the premium content!
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Popup for errors */}
       {popupError && (
         <div className="media-popup-overlay">
           <div className="media-popup">
@@ -171,7 +499,7 @@ export default function MediaPage() {
               onClick={() => setPopupError(null)}
               autoFocus
             >
-              Ok
+              OK
             </button>
           </div>
         </div>
