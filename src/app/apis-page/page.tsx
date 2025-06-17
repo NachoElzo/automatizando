@@ -16,10 +16,10 @@ export default function ApiPracticePage() {
   const [lastResult, setLastResult] = useState<React.ReactNode>(null);
 
   const [updateName, setUpdateName] = useState("");
-  const [updateId, setUpdateId] = useState("");
   const [patchName, setPatchName] = useState("");
-  const [patchId, setPatchId] = useState("");
-  const [deleteId, setDeleteId] = useState("");
+
+  // SHARED USER ID - NEW
+  const [sharedUserId, setSharedUserId] = useState("");
 
   const [userToken, setUserToken] = useState("");
   const [userPassword, setUserPassword] = useState("");
@@ -45,6 +45,13 @@ export default function ApiPracticePage() {
   const [columns, setColumns] = useState(["id", "name", "password", "token"]);
 
   const [showFullPopup, setShowFullPopup] = useState(false);
+
+  // Clear shared inputs after requests
+  const clearSharedInputs = () => {
+    setSharedUserId("");
+    setUserPassword("");
+    setUserToken("");
+  };
 
   // GET
   const handleGetUser = async () => {
@@ -153,7 +160,7 @@ export default function ApiPracticePage() {
     setLastResult(null);
     setTokenErrorPut("");
     setPasswordErrorPut("");
-    const id = Number(updateId);
+    const id = Number(sharedUserId); // Using shared User ID
     if (!userToken) {
       setTokenErrorPut("You must provide the user token.");
       return;
@@ -191,12 +198,11 @@ export default function ApiPracticePage() {
             <b>Updated:</b> {data.name} (ID: {data.id})
           </div>
         );
-        // NO actualizar userList ni showUserList aquí
       }
     } finally {
       setLoadingPut(false);
       setUpdateName("");
-      setUpdateId("");
+      clearSharedInputs(); // Clear shared inputs
     }
   };
 
@@ -205,7 +211,7 @@ export default function ApiPracticePage() {
     setLastResult(null);
     setTokenErrorPatch("");
     setPasswordErrorPatch("");
-    const id = Number(patchId);
+    const id = Number(sharedUserId); // Using shared User ID
     if (!userToken) {
       setTokenErrorPatch("You must provide the user token.");
       return;
@@ -247,12 +253,11 @@ export default function ApiPracticePage() {
             <b>Patched:</b> {data.name} (ID: {data.id})
           </div>
         );
-        // NO actualizar userList ni showUserList aquí
       }
     } finally {
       setLoadingPatch(false);
       setPatchName("");
-      setPatchId("");
+      clearSharedInputs(); // Clear shared inputs
     }
   };
 
@@ -261,7 +266,7 @@ export default function ApiPracticePage() {
     setLastResult(null);
     setTokenErrorDelete("");
     setPasswordErrorDelete("");
-    const id = Number(deleteId);
+    const id = Number(sharedUserId); // Using shared User ID
     if (!userToken) {
       setTokenErrorDelete("You must provide the user token.");
       return;
@@ -298,11 +303,10 @@ export default function ApiPracticePage() {
             <b>Deleted user with ID:</b> {data.id}
           </div>
         );
-        // NO actualizar userList ni showUserList aquí
       }
     } finally {
       setLoadingDelete(false);
-      setDeleteId("");
+      clearSharedInputs(); // Clear shared inputs
     }
   };
 
@@ -322,7 +326,7 @@ export default function ApiPracticePage() {
   // --- LOGIN MODULE STATE ---
   const [loginUser, setLoginUser] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
-  const [loginToken, setLoginToken] = useState("");
+  const [loginToken, setLoginToken] = useState(""); // RESTORED
   const [loginLoading, setLoginLoading] = useState(false);
   const [loginError, setLoginError] = useState("");
 
@@ -355,13 +359,13 @@ export default function ApiPracticePage() {
           login: true,
           name: loginUser,
           password: loginPassword,
-          token: loginToken,
+          token: loginToken, // REQUIRED by backend
         }),
       });
       const data = await res.json();
 
       if (res.ok && data && data.user) {
-        // Save credentials to localStorage and cookies
+        // Save credentials
         if (typeof window !== "undefined") {
           localStorage.setItem("api-demo-user", loginUser);
           localStorage.setItem("api-demo-token", loginToken);
@@ -370,11 +374,10 @@ export default function ApiPracticePage() {
           document.cookie = `api-demo-token=${loginToken}; path=/`;
           document.cookie = `api-demo-password=${loginPassword}; path=/`;
         }
-        // Limpiar los campos de login
         setLoginUser("");
         setLoginPassword("");
         setLoginToken("");
-        // Redirigir a la página de bienvenida en una ventana pequeña
+        // Open welcome window
         if (typeof window !== "undefined") {
           const width = Math.round(window.screen.width * 0.3);
           const height = 420;
@@ -482,39 +485,56 @@ export default function ApiPracticePage() {
         {/* USER RESULT */}
         {lastResult}
       </div>
-      {/* TOKEN & PASSWORD INPUT FOR PUT/PATCH/DELETE */}
-      <div className="api-section api-section-col">
+      
+      {/* SHARED PARAMETERS WITH BUBBLE AROUND WHOLE SECTION */}
+      <div className="shared-params-section">
         <label className="api-helper-label-red">
-          You must provide the user password and token to perform PUT, PATCH, or DELETE requests:
+          You must provide the user ID, password and token to perform PUT, PATCH, or DELETE requests:
         </label>
-        <input
-          type="text"
-          placeholder="User password"
-          value={userPassword}
-          onChange={e => setUserPassword(e.target.value.slice(0, 15))}
-          className="api-input"
-          maxLength={15}
-        />
-        <input
-          type="text"
-          placeholder="User token"
-          value={userToken}
-          onChange={e => setUserToken(e.target.value.slice(0, 15))}
-          className="api-input"
-          maxLength={15}
-        />
+        
+        <div className="shared-params-container">
+          <label className="shared-params-label">User ID</label>
+          <input
+            type="number"
+            placeholder="User ID"
+            value={sharedUserId}
+            onChange={e => setSharedUserId(e.target.value)}
+            className="api-input shared-params-input"
+            inputMode="numeric"
+            pattern="[0-9]*"
+            data-testid="shared-user-id"
+          />
+        </div>
+        
+        <div className="shared-params-container">
+          <label className="shared-params-label">User password</label>
+          <input
+            type="text"
+            placeholder="User password"
+            value={userPassword}
+            onChange={e => setUserPassword(e.target.value.slice(0, 15))}
+            className="api-input shared-params-input"
+            maxLength={15}
+            data-testid="shared-user-password"
+          />
+        </div>
+        
+        <div className="shared-params-container">
+          <label className="shared-params-label">User token</label>
+          <input
+            type="text"
+            placeholder="User token"
+            value={userToken}
+            onChange={e => setUserToken(e.target.value.slice(0, 15))}
+            className="api-input shared-params-input"
+            maxLength={15}
+            data-testid="shared-user-token"
+          />
+        </div>
       </div>
-      {/* PUT */}
-      <div className="api-section">
-        <input
-          type="number"
-          placeholder="User ID"
-          value={updateId}
-          onChange={e => setUpdateId(e.target.value)}
-          className="api-input id no-spinner"
-          inputMode="numeric"
-          pattern="[0-9]*"
-        />
+
+      {/* PUT - REDUCED MARGIN */}
+      <div className="api-section reduced-margin">
         <input
           type="text"
           placeholder="Update user name"
@@ -523,23 +543,15 @@ export default function ApiPracticePage() {
           className="api-input"
           maxLength={15}
         />
-        <button onClick={handleUpdateUser} disabled={loading || loadingPut || !updateName || !updateId} className="api-btn put">
+        <button onClick={handleUpdateUser} disabled={loading || loadingPut || !updateName || !sharedUserId} className="api-btn put">
           {loadingPut ? "Loading..." : "PUT User"}
         </button>
         {tokenErrorPut && <div className="api-error">{tokenErrorPut}</div>}
         {passwordErrorPut && <div className="api-error">{passwordErrorPut}</div>}
       </div>
-      {/* PATCH */}
-      <div className="api-section">
-        <input
-          type="number"
-          placeholder="User ID"
-          value={patchId}
-          onChange={e => setPatchId(e.target.value)}
-          className="api-input id no-spinner"
-          inputMode="numeric"
-          pattern="[0-9]*"
-        />
+      
+      {/* PATCH - REDUCED MARGIN */}
+      <div className="api-section reduced-margin">
         <input
           type="text"
           placeholder="Patch user name"
@@ -548,31 +560,23 @@ export default function ApiPracticePage() {
           className="api-input"
           maxLength={15}
         />
-        <button onClick={handlePatchUser} disabled={loading || loadingPatch || !patchName || !patchId} className="api-btn patch">
+        <button onClick={handlePatchUser} disabled={loading || loadingPatch || !patchName || !sharedUserId} className="api-btn patch">
           {loadingPatch ? "Loading..." : "PATCH User"}
         </button>
         {tokenErrorPatch && <div className="api-error">{tokenErrorPatch}</div>}
         {passwordErrorPatch && <div className="api-error">{passwordErrorPatch}</div>}
       </div>
-      {/* DELETE */}
-      <div className="api-section">
-        <input
-          type="number"
-          placeholder="User ID"
-          value={deleteId}
-          onChange={e => setDeleteId(e.target.value)}
-          className="api-input id no-spinner"
-          inputMode="numeric"
-          pattern="[0-9]*"
-        />
-        <button onClick={handleDeleteUser} disabled={loading || loadingDelete || !deleteId} className="api-btn delete">
+      
+      {/* DELETE - REDUCED MARGIN */}
+      <div className="api-section reduced-margin">
+        <button onClick={handleDeleteUser} disabled={loading || loadingDelete || !sharedUserId} className="api-btn delete">
           {loadingDelete ? "Loading..." : "DELETE User"}
         </button>
         {tokenErrorDelete && <div className="api-error">{tokenErrorDelete}</div>}
         {passwordErrorDelete && <div className="api-error">{passwordErrorDelete}</div>}
       </div>
 
-      {/* LOGIN MODULE */}
+      {/* LOGIN MODULE - UNTOUCHED */}
       <div className="api-login-module" style={{ marginTop: "4rem" }}>
         <h2 className="api-title">Login with API User</h2>
         <p className="api-description">

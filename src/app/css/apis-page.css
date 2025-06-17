@@ -1,5 +1,5 @@
 .api-container {
-  max-width: 600px; /* Aumenta el ancho */
+  max-width: 600px;
   margin: 3rem auto;
   padding: 2rem;
   background: #f0fdf4;
@@ -25,6 +25,11 @@
   gap: 0.5rem;
 }
 
+.api-section.reduced-margin {
+  margin-top: 1rem;
+  margin-bottom: 0.5rem; /* Less bottom margin */
+}
+
 .api-section-row {
   display: flex;
   justify-content: space-between;
@@ -43,7 +48,26 @@
 }
 
 .api-login-module {
-  margin-top: 2.5rem;
+  margin-top: 1.8rem ! important;
+}
+
+/* Login section - 3 inputs in line */
+.api-login-module .api-section {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.api-login-module .api-input {
+  padding: 0.5rem;
+  flex: 1; /* Equal width for all inputs */
+  min-width: 120px; /* Minimum width */
+}
+
+.api-login-module .api-btn {
+  margin: 0;
+  flex-shrink: 0; /* Button keeps its size */
 }
 
 .api-user-list {
@@ -72,7 +96,7 @@
 
 .api-input.no-spinner {
   appearance: textfield;
-  -moz-appearance: textfield; /* Esto es para Firefox */
+  -moz-appearance: textfield;
 }
 
 .api-btn {
@@ -82,7 +106,7 @@
   font-weight: 600;
   font-size: 1rem;
   cursor: pointer;
-  min-width: 140px; /* Tamaño uniforme para todos los botones */
+  min-width: 140px;
   box-sizing: border-box;
 }
 
@@ -102,7 +126,7 @@
 }
 
 .api-btn.patch {
-  background: #f59e42; /* Naranja, diferente a los otros */
+  background: #f59e42;
   color: #fff;
 }
 
@@ -132,7 +156,7 @@
 }
 
 .api-result.deleted {
-  color: #dc2626; /* Rojo para el mensaje de deleted */
+  color: #dc2626;
 }
 
 .api-error,
@@ -171,7 +195,7 @@
 }
 
 .api-helper-label-warning {
-  color: #15803d; /* Igual que .api-description */
+  color: #15803d;
   font-size: 0.8rem;
   font-style: italic;
   margin-bottom: 4px;
@@ -184,11 +208,21 @@
   margin-bottom: 4px;
 }
 
+.shared-params-section .api-helper-label-red {
+  color: #dc2626 !important;
+  font-size: 0.9rem !important;
+  font-style: italic !important;
+  margin-bottom: 0rem !important;
+  display: block !important;
+  padding-bottom: 1rem !important;
+}
+
 .api-user-list-grid {
   width: 100%;
   overflow-x: auto;
   margin-bottom: 1.5rem;
 }
+
 .api-user-list-grid table {
   width: 100%;
   border-collapse: collapse;
@@ -198,21 +232,24 @@
   overflow: hidden;
   font-size: 0.97rem;
 }
+
 .api-user-list-grid th, .api-user-list-grid td {
   border: 1px solid #22c55e;
   padding: 0.5rem 0.7rem;
   text-align: left;
 }
+
 .api-user-list-grid th {
   background: #e0fbe3;
   color: #15803d;
   font-weight: 700;
 }
+
 .api-user-list-grid td {
   color: #2563eb;
 }
 
-/* POPUP MODAL (used for table full and login success) */
+/* POPUP MODAL */
 .popup-overlay {
   position: fixed;
   z-index: 9999;
@@ -266,7 +303,7 @@
   background: #16a34a;
 }
 
-/* Robot animation inside popup */
+/* Robot animation */
 .popup-modal-robot {
   width: 30vw;
   min-width: 260px;
@@ -288,6 +325,7 @@
   animation: robot-bounce 1.2s infinite alternate;
   box-shadow: 0 0 0 6px #e0fbe3;
 }
+
 .robot-animation::before {
   content: "";
   position: absolute;
@@ -299,6 +337,7 @@
   border-radius: 50%;
   box-shadow: 30px 0 #fff;
 }
+
 .robot-animation::after {
   content: "";
   position: absolute;
@@ -309,20 +348,74 @@
   background: #fff;
   border-radius: 8px/4px;
 }
+
 @keyframes robot-bounce {
   0% { transform: translateY(0);}
   100% { transform: translateY(-18px);}
 }
 
-@media (max-width: 900px) {
-  .popup-modal-robot {
-    width: 90vw;
-    min-width: 0;
-    max-width: 98vw;
-  }
+/* Shared parameters section */
+.shared-params-section {
+  border: 1.5px solid #15803d;
+  background: #e0fbe3;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  margin: 1.5rem 0;
 }
 
-/* LOGIN MODULE RESPONSIVE & NESTED CONTAINER FIX */
+.shared-params-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.shared-params-container:last-child {
+  margin-bottom: 0;
+}
+
+.shared-params-label {
+  min-width: 120px;
+  color: #2563eb;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.shared-params-input {
+  width: 200px;
+  height: 38px;
+  box-sizing: border-box;
+}
+
+.shared-params-input[type="number"]::-webkit-outer-spin-button,
+.shared-params-input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.shared-params-input[type="number"] {
+  -webkit-appearance: textfield;
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+/* Login section alignment */
+.api-login-module .api-section {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.api-login-module .api-input {
+  padding: 0.5rem;
+}
+
+.api-login-module .api-btn {
+  margin: 0;
+}
+
+/* LOGIN MODULE RESPONSIVE */
 .api-container .api-container {
   margin-top: 2.5rem !important;
   background: #f0fdf4;
@@ -333,7 +426,15 @@
   width: 100%;
 }
 
-/* RESPONSIVE DESIGN FOR MOBILE */
+/* RESPONSIVE DESIGN */
+@media (max-width: 900px) {
+  .popup-modal-robot {
+    width: 90vw;
+    min-width: 0;
+    max-width: 98vw;
+  }
+}
+
 @media (max-width: 600px) {
   .api-container {
     max-width: 98vw;
