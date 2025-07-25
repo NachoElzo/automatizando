@@ -5,12 +5,7 @@ import "../css/inputs-fields.css";
 
 function TooltipCell({ value, isHeader = false }: { value: string; isHeader?: boolean }) {
   const CellTag = isHeader ? "th" : "td";
-  // El atributo title muestra el tooltip nativo del navegador
-  return (
-    <CellTag title={value}>
-      {value}
-    </CellTag>
-  );
+  return <CellTag title={value}>{value}</CellTag>;
 }
 
 export default function InputsFields() {
@@ -25,8 +20,13 @@ export default function InputsFields() {
   });
 
   const [errors, setErrors] = useState({
-    phone: "",
+    name: "",
+    lastName: "",
     age: "",
+    email: "",
+    phone: "",
+    country: "",
+    city: "",
   });
 
   const [gridData, setGridData] = useState([
@@ -65,52 +65,70 @@ export default function InputsFields() {
   const [deleteError, setDeleteError] = useState("");
   const [deleteId, setDeleteId] = useState("");
   const [error, setError] = useState("");
-  const isFormValid =
-    Object.values(formData).every((v) => v.trim() !== "") &&
-    !errors.phone &&
-    !errors.age;
+
+  // Validations for each field
+  const validateField = (name: string, value: string) => {
+    let errorMsg = "";
+    switch (name) {
+      case "name":
+        if (!/^[A-Za-z\s]*$/.test(value)) errorMsg = "Name must contain only letters.";
+        else if (value.length > 20) errorMsg = "Name must be at most 20 characters.";
+        break;
+      case "lastName":
+        if (!/^[A-Za-z\s]*$/.test(value)) errorMsg = "Last Name must contain only letters.";
+        else if (value.length > 20) errorMsg = "Last Name must be at most 20 characters.";
+        break;
+      case "email":
+        // simple email regex
+        if (!/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/.test(value)) errorMsg = "Invalid email address.";
+        break;
+      case "phone":
+        if (!/^\d*$/.test(value)) errorMsg = "Phone must contain only numbers.";
+        else if (value.length > 0 && (value.length < 9 || value.length > 12))
+          errorMsg = "Phone must be between 9 and 12 digits.";
+        break;
+      case "country":
+        if (!/^[A-Za-z\s]*$/.test(value)) errorMsg = "Country must contain only letters.";
+        else if (value.length > 15) errorMsg = "Country must be at most 15 characters.";
+        break;
+      case "city":
+        if (!/^[A-Za-z\s]*$/.test(value)) errorMsg = "City must contain only letters.";
+        else if (value.length > 15) errorMsg = "City must be at most 15 characters.";
+        break;
+      case "age":
+        // Assuming age validation as before
+        const ageValue = parseInt(value, 10);
+        if (value && (ageValue < 1 || ageValue > 150)) errorMsg = "Age must be between 1 and 150.";
+        break;
+      default:
+        break;
+    }
+    return errorMsg;
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-
-    if (name === "phone") {
-      if (!/^\d{0,10}$/.test(value)) {
-        setErrors((prevErrors) => ({
-          ...prevErrors,
-          phone: "Phone must have at least 10 numbers.",
-        }));
-      } else {
-        setErrors((prevErrors) => ({
-          ...prevErrors,
-          phone: "",
-        }));
-      }
-    }
-
-    if (name === "age") {
-      const ageValue = parseInt(value, 10);
-      if (ageValue < 1 || ageValue > 150) {
-        setErrors((prevErrors) => ({
-          ...prevErrors,
-          age: "Age must be between 1 and 150.",
-        }));
-      } else {
-        setErrors((prevErrors) => ({
-          ...prevErrors,
-          age: "",
-        }));
-      }
-    }
-
+    // Validate field and update errors
+    const errorMsg = validateField(name, value);
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: errorMsg,
+    }));
     setFormData((prevData) => ({
       ...prevData,
       [name]: value,
     }));
   };
 
+  // isFormValid: all fields must be filled and no error messages exist
+  const isFormValid =
+    Object.values(formData).every((v) => v.trim() !== "") &&
+    Object.values(errors).every((err) => err === "");
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+
     if (!isFormValid) return;
 
     if (gridData.length >= 20) {
@@ -118,12 +136,8 @@ export default function InputsFields() {
       return;
     }
 
-    // Encuentra el máximo id actual y suma 1
-    const maxId = gridData.length > 0 ? Math.max(...gridData.map(row => row.id)) : 0;
-    setGridData((prevData) => [
-      { id: maxId + 1, ...formData },
-      ...prevData,
-    ]);
+    const maxId = gridData.length > 0 ? Math.max(...gridData.map((row) => row.id)) : 0;
+    setGridData((prevData) => [{ id: maxId + 1, ...formData }, ...prevData]);
     setFormData({
       name: "",
       lastName: "",
@@ -158,6 +172,7 @@ export default function InputsFields() {
 
       <div className="form-container bg-white p-6 rounded-lg shadow-md">
         <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          {/* Name */}
           <div>
             <label htmlFor="name" className="block text-gray-700 font-medium mb-2">
               Name
@@ -171,7 +186,9 @@ export default function InputsFields() {
               className="input-field"
               placeholder="Enter your name"
             />
+            {errors.name && <p className="error-message text-red-500 mt-1">{errors.name}</p>}
           </div>
+          {/* Last Name */}
           <div>
             <label htmlFor="lastName" className="block text-gray-700 font-medium mb-2">
               Last Name
@@ -185,7 +202,9 @@ export default function InputsFields() {
               className="input-field"
               placeholder="Enter your last name"
             />
+            {errors.lastName && <p className="error-message text-red-500 mt-1">{errors.lastName}</p>}
           </div>
+          {/* Age */}
           <div>
             <label htmlFor="age" className="block text-gray-700 font-medium mb-2">
               Age
@@ -199,8 +218,9 @@ export default function InputsFields() {
               className="input-field"
               placeholder="Enter your age"
             />
-            {errors.age && <p className="error-message">{errors.age}</p>}
+            {errors.age && <p className="error-message text-red-500 mt-1">{errors.age}</p>}
           </div>
+          {/* Email */}
           <div>
             <label htmlFor="email" className="block text-gray-700 font-medium mb-2">
               Email
@@ -214,7 +234,9 @@ export default function InputsFields() {
               className="input-field"
               placeholder="Enter your email"
             />
+            {errors.email && <p className="error-message text-red-500 mt-1">{errors.email}</p>}
           </div>
+          {/* Phone */}
           <div>
             <label htmlFor="phone" className="block text-gray-700 font-medium mb-2">
               Phone
@@ -227,10 +249,11 @@ export default function InputsFields() {
               onChange={handleChange}
               className="input-field"
               placeholder="Enter your phone number"
-              maxLength={10}
+              maxLength={12}
             />
-            {errors.phone && <p className="error-message">{errors.phone}</p>}
+            {errors.phone && <p className="error-message text-red-500 mt-1">{errors.phone}</p>}
           </div>
+          {/* Country */}
           <div>
             <label htmlFor="country" className="block text-gray-700 font-medium mb-2">
               Country
@@ -244,7 +267,9 @@ export default function InputsFields() {
               className="input-field"
               placeholder="Enter your country"
             />
+            {errors.country && <p className="error-message text-red-500 mt-1">{errors.country}</p>}
           </div>
+          {/* City */}
           <div>
             <label htmlFor="city" className="block text-gray-700 font-medium mb-2">
               City
@@ -258,12 +283,9 @@ export default function InputsFields() {
               className="input-field"
               placeholder="Enter your city"
             />
+            {errors.city && <p className="error-message text-red-500 mt-1">{errors.city}</p>}
           </div>
-          <button
-            type="submit"
-            className="submit-button"
-            disabled={!isFormValid}
-          >
+          <button type="submit" className="submit-button" disabled={!isFormValid}>
             Send
           </button>
         </form>
@@ -272,7 +294,7 @@ export default function InputsFields() {
             {error}
           </div>
         )}
-        <form onSubmit={handleDeleteById} className="delete-id-form">
+        <form onSubmit={handleDeleteById} className="delete-id-form mt-4">
           <label htmlFor="deleteId" className="label">
             Delete by ID:
           </label>
@@ -283,11 +305,7 @@ export default function InputsFields() {
             value={deleteId}
             onChange={(e) => setDeleteId(e.target.value)}
           />
-          <button
-            type="submit"
-            className="submit-button"
-            disabled={!/^\d+$/.test(deleteId) || Number(deleteId) <= 0}
-          >
+          <button type="submit" className="submit-button" disabled={!/^\d+$/.test(deleteId) || Number(deleteId) <= 0}>
             Delete
           </button>
         </form>
