@@ -108,8 +108,13 @@ export default function InputsFields() {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    // Validate field and update errors
-    const errorMsg = validateField(name, value);
+    let errorMsg = validateField(name, value);
+
+    // Si el campo es email y está vacío, borra el error
+    if (name === "email" && value.trim() === "") {
+      errorMsg = "";
+    }
+
     setErrors((prevErrors) => ({
       ...prevErrors,
       [name]: errorMsg,
