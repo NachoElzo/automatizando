@@ -34,6 +34,15 @@ export async function POST(req: NextRequest) {
   // LOGIN MOCK (NO id, solo name, password, token)
   if (body.login) {
     const { name, password, token } = body;
+    
+    // VALIDACIÓN PARA LOGIN
+    if (!name || !password || !token) {
+      return NextResponse.json(
+        { error: "All fields are required for login." },
+        { status: 400 }
+      );
+    }
+    
     const user = users.find(
       (u) => u.name === name && u.password === password && u.token === token
     );
@@ -47,16 +56,35 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  // ...existing user creation logic...
+  // VALIDACIÓN PARA CREAR USUARIO
   const { name, password } = body;
+  
+  if (!name || !password) {
+    return NextResponse.json(
+      { error: "Name and password are required." },
+      { status: 400 }
+    );
+  }
+  
+  if (typeof name !== 'string' || typeof password !== 'string') {
+    return NextResponse.json(
+      { error: "Name and password must be strings." },
+      { status: 400 }
+    );
+  }
+  
+  if (name.trim() === '' || password.trim() === '') {
+    return NextResponse.json(
+      { error: "Name and password cannot be empty." },
+      { status: 400 }
+    );
+  }
+
+  // ...existing user creation logic...
   const token = generateToken();
-  const user = { id: Math.floor(Math.random() * 10000), name, password, token };
+  const user = { id: Math.floor(Math.random() * 10000), name: name.trim(), password: password.trim(), token };
   users.push(user);
   return NextResponse.json({ user, token });
-}
-
-function getUserByIdAndToken(id: number, token: string | null) {
-  return users.find((u) => u.id === id && u.token === token);
 }
 
 export async function PUT(req: NextRequest) {
@@ -64,18 +92,37 @@ export async function PUT(req: NextRequest) {
   if (Date.now() - (lastRequest[ip] || 0) < 1000) {
     return NextResponse.json({ error: "Too many requests" }, { status: 429 });
   }
-  lastRequest[ip] = Date.now();
+  lastRequest[ip] = Date.now(); // ← CORREGIDO: now() en lugar de Now()
   const { id, name } = await req.json();
-  const token = req.headers.get("x-user-token");
-  if (!token)
-    return NextResponse.json({ error: "Missing token" }, { status: 401 });
-  const user = getUserByIdAndToken(id, token);
-  if (!user)
+  
+  // VALIDACIÓN PARA PUT
+  if (!name || typeof name !== 'string' || name.trim() === '') {
     return NextResponse.json(
-      { error: "User not found or invalid token" },
-      { status: 401 }
+      { error: "Valid name is required." },
+      { status: 400 }
     );
-  user.name = name;
+  }
+  
+  const token = req.headers.get("x-user-token");
+  const password = req.headers.get("x-user-password");
+  
+  if (!token) {
+    return NextResponse.json({ error: "Missing token" }, { status: 401 });
+  }
+  
+  if (!password) {
+    return NextResponse.json({ error: "Missing password" }, { status: 401 });
+  }
+  
+  const user = users.find((u) => u.id === id && u.token === token && u.password === password);
+  if (!user) {
+    return NextResponse.json(
+      { error: "User not found or invalid credentials" },
+      { status: 404 }
+    );
+  }
+  
+  user.name = name.trim();
   return NextResponse.json({
     id: user.id,
     name: user.name,
@@ -91,16 +138,35 @@ export async function PATCH(req: NextRequest) {
   }
   lastRequest[ip] = Date.now();
   const { id, name } = await req.json();
-  const token = req.headers.get("x-user-token");
-  if (!token)
-    return NextResponse.json({ error: "Missing token" }, { status: 401 });
-  const user = getUserByIdAndToken(id, token);
-  if (!user)
+  
+  // VALIDACIÓN PARA PATCH
+  if (!name || typeof name !== 'string' || name.trim() === '') {
     return NextResponse.json(
-      { error: "User not found or invalid token" },
-      { status: 401 }
+      { error: "Valid name is required." },
+      { status: 400 }
     );
-  user.name = name;
+  }
+  
+  const token = req.headers.get("x-user-token");
+  const password = req.headers.get("x-user-password");
+  
+  if (!token) {
+    return NextResponse.json({ error: "Missing token" }, { status: 401 });
+  }
+  
+  if (!password) {
+    return NextResponse.json({ error: "Missing password" }, { status: 401 });
+  }
+  
+  const user = users.find((u) => u.id === id && u.token === token && u.password === password);
+  if (!user) {
+    return NextResponse.json(
+      { error: "User not found or invalid credentials" },
+      { status: 404 }
+    );
+  }
+  
+  user.name = name.trim();
   return NextResponse.json({
     id: user.id,
     name: user.name,
@@ -122,15 +188,26 @@ export async function DELETE(req: NextRequest) {
   }
   lastRequest[ip] = Date.now();
   const { id } = await req.json();
+  
   const token = req.headers.get("x-user-token");
-  if (!token)
+  const password = req.headers.get("x-user-password");
+  
+  if (!token) {
     return NextResponse.json({ error: "Missing token" }, { status: 401 });
-  const idx = users.findIndex((u) => u.id === id && u.token === token);
-  if (idx === -1)
+  }
+  
+  if (!password) {
+    return NextResponse.json({ error: "Missing password" }, { status: 401 });
+  }
+  
+  const idx = users.findIndex((u) => u.id === id && u.token === token && u.password === password);
+  if (idx === -1) {
     return NextResponse.json(
-      { error: "User not found or invalid token" },
-      { status: 401 }
+      { error: "User not found or invalid credentials" },
+      { status: 404 }
     );
+  }
+  
   users = users.filter((u, i) => i !== idx);
   return NextResponse.json({ success: true, id });
 }
